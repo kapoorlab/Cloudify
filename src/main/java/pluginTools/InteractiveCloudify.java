@@ -1,11 +1,14 @@
 package pluginTools;
 
+import javax.swing.JPanel;
+
+import ij.plugin.PlugIn;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 
-public class InteractiveCloudify {
+public class InteractiveCloudify extends JPanel implements PlugIn {
 
 	public RandomAccessibleInterval<FloatType> originalimg;
 	public RandomAccessibleInterval<FloatType> originalSecimg;																			
@@ -52,6 +55,12 @@ public class InteractiveCloudify {
 		this.IntSegoriginalimg = IntSegoriginalimg;
 		this.IntSegoriginalSecimg = IntSegoriginalSecimg;
 
+	}
+
+	@Override
+	public void run(String arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 

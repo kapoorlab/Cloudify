@@ -21,6 +21,10 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import fileListeners.ChooseOrigMap;
+import fileListeners.ChooseSecOrigMap;
+import fileListeners.ChooseSegAMap;
+import fileListeners.ChooseSegBMap;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.WindowManager;
@@ -30,6 +34,7 @@ import loadfile.CovistoOneChFileLoader;
 import loadfile.CovistoTwoChForceFileLoader;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 
@@ -41,8 +46,8 @@ public class CloudifyFileChooser extends JPanel {
 	private static final long serialVersionUID = 1L;
 	  public JFrame Cardframe = new JFrame("Nuclear cloud aggregate tracker");
 	  public JPanel panelCont = new JPanel();
-	  public ImagePlus impOrig, impSegA, impSegB;
-	  public File impOrigfile, impSegAfile, impSegBfile;
+	  public ImagePlus impOrig, impOrigSec, impSegA, impSegB;
+	  public File impOrigfile, impOrigSecfile, impSegAfile, impSegBfile;
 	  public JPanel panelFirst = new JPanel();
 	  public JPanel Panelfile = new JPanel();
 	  public JPanel Panelsuperfile = new JPanel();
@@ -67,14 +72,14 @@ public class CloudifyFileChooser extends JPanel {
 
 	  
 	  
-	  public String chooseSegstring = "Segmentation Images";
+	  public String chooseSegstring = "Segmentation Images (C1 and C2)";
 	  public Border chooseSeg = new CompoundBorder(new TitledBorder(chooseSegstring),
 				new EmptyBorder(c.insets));
-	  public String chooseoriginalfilestring = "Choose original Image (C1)";
+	  public String chooseoriginalfilestring = "Choose original Image (C1 and C2)";
 	  public Border chooseoriginalfile = new CompoundBorder(new TitledBorder(chooseoriginalfilestring),
 				new EmptyBorder(c.insets));
 	  public String donestring = "Done Selection";
-	  public Border LoadEtrack = new CompoundBorder(new TitledBorder(donestring),
+	  public Border LoadCtrack = new CompoundBorder(new TitledBorder(donestring),
 				new EmptyBorder(c.insets));
 	
 	  
@@ -83,9 +88,7 @@ public class CloudifyFileChooser extends JPanel {
 		
 		  
 		   panelFirst.setLayout(layout);
-		   Panelfile.setLayout(layout);
 		   
-		   Panelfileoriginal.setLayout(layout);
 		   Paneldone.setLayout(layout);
 	       CardLayout cl = new CardLayout();
 			
@@ -105,7 +108,7 @@ public class CloudifyFileChooser extends JPanel {
 			
 			
 			
-			CovistoOneChFileLoader original = new CovistoOneChFileLoader(chooseoriginalfilestring, blankimageNames);
+			CovistoTwoChForceFileLoader original = new CovistoTwoChForceFileLoader(chooseoriginalfilestring, blankimageNames);
 			
 			Panelfileoriginal = original.TwoChannelOption();
 			
@@ -121,8 +124,21 @@ public class CloudifyFileChooser extends JPanel {
 			panelFirst.add(Panelfile, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
+			Paneldone.add(Done, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+			Paneldone.setBorder(LoadCtrack);
+			panelFirst.add(Paneldone, new GridBagConstraints(0, 4, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			
+			// Listeneres 
+			
+			
+			original.ChooseImage.addActionListener(new ChooseOrigMap(this, original.ChooseImage));
+			original.ChoosesecImage.addActionListener(new ChooseSecOrigMap(this, original.ChoosesecImage));
+			segmentation.ChooseImage.addActionListener(new ChooseSegAMap(this, segmentation.ChooseImage));
+			segmentation.ChoosesecImage.addActionListener(new ChooseSegBMap(this, segmentation.ChoosesecImage));
+			Done.addActionListener(new DoneListener());
 			panelFirst.setVisible(true);
 			cl.show(panelCont, "1");
 			Cardframe.add(panelCont, "Center");
@@ -161,14 +177,16 @@ public class CloudifyFileChooser extends JPanel {
 			// Tracking and Measurement is done with imageA 
 	        
 		    org.apache.log4j.BasicConfigurator.configure();
-			RandomAccessibleInterval<FloatType> imageSegA = new ImgOpener().openImgs(impSegA.getOriginalFileInfo().directory + impSegA.getOriginalFileInfo().fileName , new FloatType()).iterator().next();
-			RandomAccessibleInterval<FloatType> imageSegB = new ImgOpener().openImgs(impSegB.getOriginalFileInfo().directory + impSegB.getOriginalFileInfo().fileName , new FloatType()).iterator().next();
+			
 			RandomAccessibleInterval<FloatType> imageOrig = new ImgOpener().openImgs(impOrig.getOriginalFileInfo().directory + impOrig.getOriginalFileInfo().fileName, new FloatType()).iterator().next();
+			RandomAccessibleInterval<FloatType> imageOrigSec = new ImgOpener().openImgs(impOrigSec.getOriginalFileInfo().directory + impOrigSec.getOriginalFileInfo().fileName, new FloatType()).iterator().next();
+			RandomAccessibleInterval<BitType> imageSegA = new ImgOpener().openImgs(impSegA.getOriginalFileInfo().directory + impSegA.getOriginalFileInfo().fileName , new BitType()).iterator().next();
+			RandomAccessibleInterval<BitType> imageSegB = new ImgOpener().openImgs(impSegB.getOriginalFileInfo().directory + impSegB.getOriginalFileInfo().fileName , new BitType()).iterator().next();
+			
 			
 			WindowManager.closeAllWindows();
 			
-			
-			
+			new InteractiveCloudify(imageOrig, imageOrigSec, imageSegA, imageSegB  );
 			close(parent);
 			
 			

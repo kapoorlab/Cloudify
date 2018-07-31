@@ -43,7 +43,6 @@ public class ExecuteDOG extends SwingWorker<Void, Void> {
 					CovistoZselectPanel.thirdDimension = z;
 					CovistoTimeselectPanel.fourthDimension = t;
 
-				
 
 					// UnsignedByteType image created here
 					parent.updatePreview(ValueChange.THIRDDIMmouse);

@@ -42,7 +42,7 @@ public class Watershedobject {
 
 	}
 
-	public static Watershedobject CurrentLabelImage(final InteractiveCloudify parent, RandomAccessibleInterval<IntType> Intimg, int currentLabel) {
+	public static Watershedobject CurrentLabelImage(final InteractiveCloudify parent, RandomAccessibleInterval<IntType> Intimg,RandomAccessibleInterval<FloatType> Origimg, int currentLabel) {
 		int n = Intimg.numDimensions();
 		long[] position = new long[n];
 
@@ -52,6 +52,7 @@ public class Watershedobject {
 
 		RandomAccess<FloatType> imageRA = outimg.randomAccess();
 
+		RandomAccess<FloatType> origRA = Origimg.randomAccess();
 		// Go through the whole image and add every pixel, that belongs to
 		// the currently processed label
 		long[] minVal = { Intimg.max(0), Intimg.max(1) };
@@ -63,6 +64,7 @@ public class Watershedobject {
 			int i = intCursor.get().get();
 			if (i == currentLabel) {
 				intCursor.localize(position);
+				origRA.setPosition(intCursor);
 				for (int d = 0; d < n; ++d) {
 					if (position[d] < minVal[d]) {
 						minVal[d] = position[d];
@@ -73,7 +75,7 @@ public class Watershedobject {
 
 				}
 
-				imageRA.get().setOne();
+				imageRA.get().set(origRA.get());
 			} else
 				imageRA.get().setZero();
 

@@ -34,7 +34,7 @@ public class PREUnstability_ScoreListener implements AdjustmentListener {
 		this.scrollbar = scrollbar;
 		this.secparent = secparent;
 		scrollbar.addMouseListener( new CloudCovistoStandardMouseListener( secparent, ValueChange.MSER ) );
-		
+
 	}
 
 
@@ -43,7 +43,6 @@ public class PREUnstability_ScoreListener implements AdjustmentListener {
 	public void adjustmentValueChanged(final AdjustmentEvent event) {
 		    CovistoMserPanel.Unstability_Score = utility.ScrollbarUtils.computeValueFromScrollbarPosition(event.getValue(), min, max, scrollbarSize);
 
-		
 			scrollbar.setValue(utility.ScrollbarUtils.computeScrollbarPositionFromValue(CovistoMserPanel.Unstability_Score, min, max, scrollbarSize));
 
 			label.setText(string +  " = "  + CovistoMserPanel.Unstability_Score);

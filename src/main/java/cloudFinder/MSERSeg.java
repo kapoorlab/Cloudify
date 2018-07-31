@@ -10,6 +10,7 @@ import javax.swing.SwingWorker;
 import ij.gui.Roi;
 import mserGUI.CovistoMserPanel;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 import pluginTools.InteractiveCloudify;
 import timeGUI.CovistoTimeselectPanel;
 import zGUI.CovistoZselectPanel;
@@ -41,8 +42,7 @@ public class MSERSeg extends SwingWorker<Void, Void> {
 		
 		// Make the watershed object
 		
-		StaticMethods.GetPixelList(parent, parent.IntSegoriginalimg);
-		
+		StaticMethods.GetPixelList(parent, parent.CurrentViewIntSegoriginalimg);
 		
 		Iterator<Integer> setiter = parent.pixellist.iterator();
 		 parent.overlay.clear();
@@ -51,20 +51,17 @@ public class MSERSeg extends SwingWorker<Void, Void> {
 		while (setiter.hasNext()) {
 
 			int label = setiter.next();
-
 			// Get the region 
-			Watershedobject current = Watershedobject.CurrentLabelImage(parent, parent.IntSegoriginalimg, label);
-			
-			parent.newimg = utility.CovistoSlicer.PREcopytoByteImage(current.source);
+			Watershedobject current = Watershedobject.CurrentLabelImage(parent, parent.CurrentViewIntSegoriginalimg,parent.CurrentViewOrig, label);
 			
 			if (CovistoMserPanel.darktobright)
 
-				parent.newtree = MserTree.buildMserTree(parent.newimg, CovistoMserPanel.delta, CovistoMserPanel.minSize, CovistoMserPanel.maxSize,
+				parent.newtree = MserTree.buildMserTree(current.source, CovistoMserPanel.delta, CovistoMserPanel.minSize, CovistoMserPanel.maxSize,
 						CovistoMserPanel.Unstability_Score, CovistoMserPanel.minDiversity, true);
 
 			else
 
-				parent.newtree = MserTree.buildMserTree(parent.newimg, CovistoMserPanel.delta, CovistoMserPanel.minSize, CovistoMserPanel.maxSize,
+				parent.newtree = MserTree.buildMserTree(current.source, CovistoMserPanel.delta, CovistoMserPanel.minSize, CovistoMserPanel.maxSize,
 						CovistoMserPanel.Unstability_Score, CovistoMserPanel.minDiversity, false);
 			
 
@@ -89,11 +86,10 @@ public class MSERSeg extends SwingWorker<Void, Void> {
 				roi.setStrokeColor(parent.colorDrawMser);
 				parent.overlay.add(roi);
 				
-				
 			}
 			
 			
-			CloudObject currentCloud = new CloudObject(parent.IntSegoriginalimg, currentLabelObject, current.centroid, current.NumPixels, current.totalIntensity, current.meanIntensity,
+			CloudObject currentCloud = new CloudObject(parent.CurrentViewIntSegoriginalimg, currentLabelObject, current.centroid, current.NumPixels, current.totalIntensity, current.meanIntensity,
 					CovistoZselectPanel.thirdDimension, CovistoTimeselectPanel.fourthDimension, label);
 			Allclouds.add(currentCloud);
 			

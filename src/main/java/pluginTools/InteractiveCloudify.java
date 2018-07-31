@@ -31,7 +31,10 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Overlay;
 import ij.gui.Roi;
+import ij.io.Opener;
 import ij.plugin.PlugIn;
+import interactivePreprocessing.DoDOGListener;
+import interactivePreprocessing.DoMSERListener;
 import listeners.*;
 import mserGUI.CovistoMserPanel;
 import net.imglib2.Cursor;
@@ -51,8 +54,6 @@ import zGUI.CovistoZselectPanel;
 
 public class InteractiveCloudify extends JPanel implements PlugIn {
 
-	
-	
 	/**
 	 * 
 	 */
@@ -70,16 +71,23 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public final int scrollbarSize = 1000;
 	public HashMap<String, ArrayList<CloudObject>> ZTRois;
 	public RandomAccessibleInterval<FloatType> originalimg;
-	public RandomAccessibleInterval<FloatType> originalSecimg;																			
+	public RandomAccessibleInterval<FloatType> originalSecimg;
+	
+	
+	
 	public RandomAccessibleInterval<FloatType> CurrentViewOrig;
+	public RandomAccessibleInterval<FloatType> CurrentViewSecOrig;
+	
 	public RandomAccessibleInterval<FloatType> Segoriginalimg;
-	public RandomAccessibleInterval<FloatType> SegoriginalSecimg;
-	public RandomAccessibleInterval<UnsignedByteType> newimg;
 	public RandomAccessibleInterval<IntType> IntSegoriginalimg;
-	public RandomAccessibleInterval<IntType> IntSegoriginalSecimg;
-	public boolean showMSER = false;
+	
+	public RandomAccessibleInterval<FloatType> CurrentViewSegoriginalimg;
+	public RandomAccessibleInterval<IntType> CurrentViewIntSegoriginalimg;
+	
+	
+	public boolean showMSER = true;
 	public boolean showDOG = false;
-	public MserTree<UnsignedByteType> newtree;
+	public MserTree<FloatType> newtree;
 	public Color colorDrawMser = Color.green;
 	public Color colorDrawDog = Color.red;
 	public Color colorConfirm = Color.blue;
@@ -87,57 +95,34 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public Color colorTrack = Color.GREEN;
 	public Overlay overlay;
 	public Set<Integer> pixellist;
-	
-	
+
 	public static enum ValueChange {
-		
+
 		MSER, DOG, FOURTHDIMmouse, THIRDDIMmouse;
-		
+
 	}
 
 	/**
-	 * Current constructor, two channel images and an integer labelled image for nuclei
+	 * Current constructor, two channel images and an integer labelled image for
+	 * nuclei
+	 * 
 	 * @param originalimg
 	 * @param originalSecimg
 	 * @param IntSegoriginalSecimg
 	 */
 	public InteractiveCloudify(final RandomAccessibleInterval<FloatType> originalimg,
 			final RandomAccessibleInterval<FloatType> originalSecimg,
-			final RandomAccessibleInterval<IntType> IntSegoriginalSecimg) {
-
-		this.originalimg = originalimg;
-		this.originalSecimg = originalSecimg;
-		this.IntSegoriginalSecimg = IntSegoriginalSecimg;
-		this.ndims = originalimg.numDimensions();
-	}
-
-	public InteractiveCloudify(final RandomAccessibleInterval<FloatType> originalimg,
-			final RandomAccessibleInterval<FloatType> originalSecimg,
-			final RandomAccessibleInterval<FloatType> Segoriginalimg,
-			final RandomAccessibleInterval<FloatType> SegoriginalSecimg) {
-
-		this.originalimg = originalimg;
-		this.originalSecimg = originalSecimg;
-		this.Segoriginalimg = Segoriginalimg;
-		this.SegoriginalSecimg = SegoriginalSecimg;
-		this.ndims = originalimg.numDimensions();
-	}
-	
-	public InteractiveCloudify(final RandomAccessibleInterval<FloatType> originalimg,
-			final RandomAccessibleInterval<FloatType> originalSecimg,
-			final RandomAccessibleInterval<FloatType> Segoriginalimg,
-			final RandomAccessibleInterval<FloatType> SegoriginalSecimg,
 			final RandomAccessibleInterval<IntType> IntSegoriginalimg,
-			final RandomAccessibleInterval<IntType> IntSegoriginalSecimg) {
+			final RandomAccessibleInterval<FloatType> Segoriginalimg) {
 
 		this.originalimg = originalimg;
 		this.originalSecimg = originalSecimg;
-		this.Segoriginalimg = Segoriginalimg;
-		this.SegoriginalSecimg = SegoriginalSecimg;
 		this.IntSegoriginalimg = IntSegoriginalimg;
-		this.IntSegoriginalSecimg = IntSegoriginalSecimg;
+		this.Segoriginalimg = Segoriginalimg;
 		this.ndims = originalimg.numDimensions();
 	}
+
+	
 
 	@Override
 	public void run(String arg0) {
@@ -148,7 +133,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		peaks = new ArrayList<RefinedPeak<Point>>();
 		ZTRois = new HashMap<String, ArrayList<CloudObject>>();
 		pixellist = new HashSet<Integer>();
-		
+
 		if (ndims < 3) {
 
 			CovistoZselectPanel.thirdDimensionSize = 0;
@@ -172,42 +157,62 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 			CovistoZselectPanel.thirdDimensionSize = (int) originalimg.dimension(2);
 			CovistoTimeselectPanel.fourthDimensionSize = (int) originalimg.dimension(3);
 
-			
 		}
 
-		CurrentViewOrig = utility.CovistoSlicer.getCurrentView(originalimg, CovistoTimeselectPanel.fourthDimension,
-				CovistoZselectPanel.thirdDimensionSize, CovistoZselectPanel.thirdDimension,
+		CurrentViewOrig = utility.CovistoSlicer.getCurrentView(originalimg,  CovistoZselectPanel.thirdDimension,
+				CovistoZselectPanel.thirdDimensionSize,CovistoTimeselectPanel.fourthDimension,
+				CovistoTimeselectPanel.fourthDimensionSize);
+
+		CurrentViewIntSegoriginalimg = utility.CovistoSlicer.getCurrentView(IntSegoriginalimg,
+				 CovistoZselectPanel.thirdDimension,
+					CovistoZselectPanel.thirdDimensionSize,CovistoTimeselectPanel.fourthDimension,
+					CovistoTimeselectPanel.fourthDimensionSize);
+		
+		CurrentViewSecOrig = utility.CovistoSlicer.getCurrentView(originalSecimg,  CovistoZselectPanel.thirdDimension,
+				CovistoZselectPanel.thirdDimensionSize,CovistoTimeselectPanel.fourthDimension,
 				CovistoTimeselectPanel.fourthDimensionSize);
 		
-		IntSegoriginalimg = utility.CovistoSlicer.getCurrentView(IntSegoriginalimg, CovistoTimeselectPanel.fourthDimension,
-					CovistoZselectPanel.thirdDimensionSize, CovistoZselectPanel.thirdDimension,
-					CovistoTimeselectPanel.fourthDimensionSize);
+		CurrentViewSegoriginalimg = utility.CovistoSlicer.getCurrentView(Segoriginalimg,  CovistoZselectPanel.thirdDimension,
+				CovistoZselectPanel.thirdDimensionSize,CovistoTimeselectPanel.fourthDimension,
+				CovistoTimeselectPanel.fourthDimensionSize);
 
 		imp = ImageJFunctions.show(CurrentViewOrig);
-	
+
 		imp.setTitle("Active image" + " " + "time point : " + CovistoTimeselectPanel.fourthDimension + " " + " Z: "
 				+ CovistoZselectPanel.thirdDimension);
+		
+		Card();
 	}
-	
-	
+
 	public void updatePreview(final ValueChange change) {
-		
+
 		overlay = imp.getOverlay();
+		if (overlay == null) {
+
+			overlay = new Overlay();
+			imp.setOverlay(overlay);
+		}
 		int localthirddim = CovistoZselectPanel.thirdDimension, localfourthdim = CovistoTimeselectPanel.fourthDimension;
-		
+
 		if (change == ValueChange.FOURTHDIMmouse || change == ValueChange.THIRDDIMmouse) {
 
-			
-			CurrentViewOrig = utility.CovistoSlicer.getCurrentView(originalimg, CovistoTimeselectPanel.fourthDimension,
-					CovistoZselectPanel.thirdDimensionSize, CovistoZselectPanel.thirdDimension,
+			CurrentViewOrig = utility.CovistoSlicer.getCurrentView(originalimg,  CovistoZselectPanel.thirdDimension,
+					CovistoZselectPanel.thirdDimensionSize,CovistoTimeselectPanel.fourthDimension,
 					CovistoTimeselectPanel.fourthDimensionSize);
-			
-			IntSegoriginalimg = utility.CovistoSlicer.getCurrentView(IntSegoriginalimg, CovistoTimeselectPanel.fourthDimension,
-						CovistoZselectPanel.thirdDimensionSize, CovistoZselectPanel.thirdDimension,
+
+			CurrentViewIntSegoriginalimg  = utility.CovistoSlicer.getCurrentView(IntSegoriginalimg,
+					 CovistoZselectPanel.thirdDimension,
+						CovistoZselectPanel.thirdDimensionSize,CovistoTimeselectPanel.fourthDimension,
 						CovistoTimeselectPanel.fourthDimensionSize);
 			
+			CurrentViewSecOrig = utility.CovistoSlicer.getCurrentView(originalSecimg,  CovistoZselectPanel.thirdDimension,
+					CovistoZselectPanel.thirdDimensionSize,CovistoTimeselectPanel.fourthDimension,
+					CovistoTimeselectPanel.fourthDimensionSize);
 			
-			
+			CurrentViewSegoriginalimg = utility.CovistoSlicer.getCurrentView(Segoriginalimg,  CovistoZselectPanel.thirdDimension,
+					CovistoZselectPanel.thirdDimensionSize,CovistoTimeselectPanel.fourthDimension,
+					CovistoTimeselectPanel.fourthDimensionSize);
+
 			if (imp == null) {
 				imp = ImageJFunctions.show(CurrentViewOrig);
 
@@ -228,13 +233,11 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 			imp.setTitle("Active image" + " " + "time point : " + CovistoTimeselectPanel.fourthDimension + " " + " Z: "
 					+ CovistoZselectPanel.thirdDimension);
 
-			newimg = utility.CovistoSlicer.PREcopytoByteImage(CurrentViewOrig);
 
 			if (showMSER) {
 
 				MSERSeg computeMSER = new MSERSeg(this, jpb);
 				computeMSER.execute();
-
 			}
 
 			if (showDOG) {
@@ -260,6 +263,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		}
 
 		if (change == ValueChange.MSER) {
+			
 			if (imp == null) {
 				imp = ImageJFunctions.show(CurrentViewOrig);
 
@@ -280,7 +284,6 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 			imp.setTitle("Active image" + " " + "time point : " + CovistoTimeselectPanel.fourthDimension + " " + " Z: "
 					+ CovistoZselectPanel.thirdDimension);
 
-			newimg = utility.CovistoSlicer.PREcopytoByteImage(CurrentViewOrig);
 
 			MSERSeg computeMSER = new MSERSeg(this, jpb);
 			computeMSER.execute();
@@ -312,34 +315,36 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 			computeDOG.execute();
 
 		}
-		
+
 	}
+
 	public JFrame Cardframe = new JFrame("Cloud Tracker");
 	public JPanel KalmanPanel = new JPanel();
 	public JPanel panelFirst = new JPanel();
 	public JPanel panelCont = new JPanel();
 	public JPanel DetectionPanel = new JPanel();
 	public JPanel Zselect = new JPanel();
+	public JPanel Timeselect = new JPanel();
 	public JPanel MserPanel = new JPanel();
 	public JPanel DogPanel = new JPanel();
-	
+
 	public CheckboxGroup detection = new CheckboxGroup();
 	final Checkbox DOG = new Checkbox("Do DoG detection", detection, showDOG);
 	final Checkbox MSER = new Checkbox("Do MSER detection", detection, showMSER);
-	
+
 	public final Insets insets = new Insets(10, 0, 0, 0);
 	public final GridBagLayout layout = new GridBagLayout();
 	public final GridBagConstraints c = new GridBagConstraints();
+
 	public void Card() {
-		
-		
+
 		CardLayout cl = new CardLayout();
 
 		c.insets = new Insets(5, 5, 5, 5);
 		panelCont.setLayout(cl);
 
 		panelCont.add(panelFirst, "1");
-
+		panelFirst.setLayout(layout);
 		c.anchor = GridBagConstraints.BOTH;
 		c.ipadx = 35;
 
@@ -347,22 +352,28 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		c.gridheight = 10;
 		c.gridy = 1;
 		c.gridx = 0;
-		
-		
-		Border methodborder = new CompoundBorder(new TitledBorder("Choose a colud finder"),
-				new EmptyBorder(c.insets));
-		
-		
+
+		Border methodborder = new CompoundBorder(new TitledBorder("Choose a colud finder"), new EmptyBorder(c.insets));
+		// Put time slider
+		Timeselect = CovistoTimeselectPanel.TimeselectPanel(ndims);
+
+		panelFirst.add(Timeselect, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		// Put z slider
+
 		Zselect = CovistoZselectPanel.ZselectPanel(ndims);
+
+		panelFirst.add(Zselect, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 		DetectionPanel.add(DOG, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 		DetectionPanel.add(MSER, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
-		
+
 		DetectionPanel.setBorder(methodborder);
 		panelFirst.add(DetectionPanel, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
-		
+
 		// Difference of Gaussian detection panel
 		DogPanel = CovistoDogPanel.DogPanel();
 		panelFirst.add(DogPanel, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
@@ -373,14 +384,14 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		panelFirst.add(MserPanel, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
 
-		
 		CovistoDogPanel.findminima.addItemListener(new FindMinimaListener(this));
 		CovistoDogPanel.findmaxima.addItemListener(new FindMaximaListener(this));
 		CovistoMserPanel.findminimaMser.addItemListener(new FindMinimaMserListener(this));
 		CovistoMserPanel.findmaximaMser.addItemListener(new FindMaximaMserListener(this));
 		CovistoDogPanel.AllDog.addActionListener(new PREApplyDog3DListener(this));
 		CovistoMserPanel.AllMser.addActionListener(new PREZMserListener(this));
-
+		DOG.addItemListener(new CloudDoDOGListener(this));
+		MSER.addItemListener(new CloudDoMSERListener(this));
 		CovistoDogPanel.sigmaslider.addAdjustmentListener(new PreSigmaListener(this, CovistoDogPanel.sigmaText,
 				CovistoDogPanel.sigmastring, CovistoDogPanel.sigmaMin, CovistoDogPanel.sigmaMax,
 				CovistoDogPanel.scrollbarSize, CovistoDogPanel.sigmaslider));
@@ -426,7 +437,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 
 		CovistoZselectPanel.inputFieldZ.addTextListener(new PreZlocListener(this, false));
 		CovistoTimeselectPanel.inputFieldT.addTextListener(new PreTlocListener(this, false));
-		
+
 		Cardframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		cl.show(panelCont, "1");
 
@@ -436,17 +447,30 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		Cardframe.pack();
 		Cardframe.setVisible(true);
 	}
-	
-	
+
 	public static void main(String[] args) {
-		
+
 		new ImageJ();
 		JFrame frame = new JFrame("");
-		CloudifyFileChooser panel = new CloudifyFileChooser();
 		
+		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/JLMCurvature/RegisteredImages/TrainingandBatch/Raw.tif");
+		impB.show();
+		
+		ImagePlus impD = new Opener().openImage("/Users/aimachine/Documents/JLMCurvature/RegisteredImages/TrainingandBatch/C2Raw.tif");
+		impD.show();
+		
+		ImagePlus impC = new Opener().openImage("/Users/aimachine/Documents/JLMCurvature/RegisteredImages/TrainingandBatch/Boundary.tif");
+		impC.show();
+		
+		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/JLMCurvature/RegisteredImages/TrainingandBatch/MultiCut.tif");
+		impA.show();
+		
+		
+		CloudifyFileChooser panel = new CloudifyFileChooser();
+
 		frame.getContentPane().add(panel, "Center");
 		frame.setSize(panel.getPreferredSize());
-		
+
 	}
 
 }

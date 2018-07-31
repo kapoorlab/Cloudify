@@ -43,7 +43,7 @@ public class DOGSeg extends SwingWorker<Void, Void> {
 		
 		// Make the watershed object
 		
-		StaticMethods.GetPixelList(parent, parent.IntSegoriginalimg);
+		StaticMethods.GetPixelList(parent, parent.CurrentViewIntSegoriginalimg);
 		
 		
 		Iterator<Integer> setiter = parent.pixellist.iterator();
@@ -55,7 +55,7 @@ public class DOGSeg extends SwingWorker<Void, Void> {
 			int label = setiter.next();
 		
 			// Get the region 
-						Watershedobject current = Watershedobject.CurrentLabelImage(parent, parent.IntSegoriginalimg, label);
+						Watershedobject current = Watershedobject.CurrentLabelImage(parent, parent.CurrentViewIntSegoriginalimg, parent.CurrentViewOrig, label);
 						
 						
 		
@@ -90,7 +90,7 @@ public class DOGSeg extends SwingWorker<Void, Void> {
 				
 				
 			}
-			CloudObject currentCloud = new CloudObject(parent.IntSegoriginalimg, currentLabelObject, current.centroid, current.NumPixels, current.totalIntensity, current.meanIntensity,
+			CloudObject currentCloud = new CloudObject(parent.CurrentViewIntSegoriginalimg, currentLabelObject, current.centroid, current.NumPixels, current.totalIntensity, current.meanIntensity,
 					CovistoZselectPanel.thirdDimension, CovistoTimeselectPanel.fourthDimension, label);
 			Allclouds.add(currentCloud);
 			

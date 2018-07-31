@@ -39,7 +39,6 @@ public class CloudCovistoStandardMouseListener implements MouseListener
 		parent.updatePreview(change);
 		
 		
-		
 	}
 
 	@Override

@@ -22,8 +22,8 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="/MasterPanels"/>
-	<classpathentry kind="src" path="/scifio"/>
-	<classpathentry kind="src" path="/Preprocessing"/>
+	<classpathentry exported="true" kind="src" path="/MasterPanels"/>
+	<classpathentry exported="true" kind="src" path="/scifio"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/Preprocessing"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

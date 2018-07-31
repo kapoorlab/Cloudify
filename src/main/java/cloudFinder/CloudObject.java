@@ -1,6 +1,7 @@
 package cloudFinder;
 
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import ij.gui.Roi;
@@ -27,7 +28,10 @@ public class CloudObject extends AbstractEuclideanSpace implements RealLocalizab
 	public int fourthDimension;
 	public ArrayList<RoiObject> roiobject;
 	public int label;
-	
+	private final int ID;
+	private String name;
+	private final ConcurrentHashMap< String, Double > features = new ConcurrentHashMap< String, Double >();
+	public static AtomicInteger IDcounter = new AtomicInteger( -1 );
 	/**
 	 * 
 	 * Integer image with the label, geometric center, intensity and area are for the image
@@ -55,6 +59,12 @@ public class CloudObject extends AbstractEuclideanSpace implements RealLocalizab
         this.thirdDimension = thirdDimension;
         this.fourthDimension = fourthDimension;
         this.label = label;
+     	this.ID = IDcounter.incrementAndGet();
+		this.name = "ID" + ID;
+    	    putFeature(ThirdDimension,  (double) thirdDimension);
+		putFeature(FourthDimension, (double) fourthDimension);
+		putFeature(XPOSITION, geometriccenter[0]);
+		putFeature(YPOSITION, geometriccenter[1]);
 	}
 
 	@Override
@@ -89,7 +99,42 @@ public class CloudObject extends AbstractEuclideanSpace implements RealLocalizab
 			position[d] = getFloatPosition(d);
 		
 	}
+	
+	public void setName( final String name )
+	{
+		this.name = name;
+	}
 
+	public int ID()
+	{
+		return ID;
+	}
+	/** The name of the blob X position feature. */
+	public static final String XPOSITION = "XPOSITION";
+
+	/** The name of the blob Y position feature. */
+	public static final String YPOSITION = "YPOSITION";
+	
+
+
+	
+
+	/** The name of the frame feature. */
+	public static final String FourthDimension = "FourthDimension";
+
+	/** The name of the frame feature. */
+	public static final String ThirdDimension = "ThirdDimension";
+	
+	
+	public final Double getFeature( final String feature )
+	{
+		return features.get( feature );
+	}
+	public final void putFeature( final String feature, final Double value )
+	{
+		features.put( feature, value );
+	}
+	
 	public static < T extends RealType< T > & NativeType< T >> Pair<Double, Integer> getIntensity(Roi roi, RandomAccessibleInterval<T> source) {
 
 		double Intensity = 0;
@@ -163,5 +208,19 @@ public class CloudObject extends AbstractEuclideanSpace implements RealLocalizab
 
 		return distance;
 	}
-	
+	public double DistanceTo(CloudObject target, final double alpha, final double beta) {
+		// Returns squared distance between the source Blob and the target Blob.
+
+		final double[] sourceLocation = geometriccenter;
+		final double[] targetLocation = target.geometriccenter;
+
+		double distance = 1.0E-5;
+
+		for (int d = 0; d < sourceLocation.length; ++d) {
+
+			distance += (sourceLocation[d] - targetLocation[d]) * (sourceLocation[d] - targetLocation[d]);
+		}
+
+			return distance;
+	}
 }

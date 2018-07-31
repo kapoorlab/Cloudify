@@ -19,11 +19,11 @@ import pluginTools.InteractiveCloudify.ValueChange;
 import timeGUI.CovistoTimeselectPanel;
 import zGUI.CovistoZselectPanel;
 
-public class ExecuteDOG extends SwingWorker<Void, Void> {
+public class ExecuteMser extends SwingWorker<Void, Void> {
 
 		final InteractiveCloudify parent;
 
-		public ExecuteDOG(final InteractiveCloudify parent) {
+		public ExecuteMser(final InteractiveCloudify parent) {
 
 			this.parent = parent;
 
@@ -61,7 +61,7 @@ public class ExecuteDOG extends SwingWorker<Void, Void> {
 
 		protected void processSlice(int z, int t) {
 
-			CloudFinderDOG<UnsignedByteType> ComputeDOG = new CloudFinderDOG<UnsignedByteType>(parent, parent.jpb,
+			CloudFinderMSER<UnsignedByteType> ComputeDOG = new CloudFinderMSER<UnsignedByteType>(parent, parent.jpb,
 					 z, t);
 			ComputeDOG.process();
 

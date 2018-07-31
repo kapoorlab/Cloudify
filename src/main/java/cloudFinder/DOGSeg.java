@@ -1,7 +1,7 @@
 package cloudFinder;
 
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.JProgressBar;
@@ -9,15 +9,11 @@ import javax.swing.SwingWorker;
 
 import dogGUI.CovistoDogPanel;
 import ij.gui.Roi;
-import interactivePreprocessing.InteractiveMethods;
-import interactivePreprocessing.InteractiveMethods.ValueChange;
 import net.imglib2.algorithm.dog.DogDetection;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.Pair;
 import net.imglib2.view.Views;
 import pluginTools.InteractiveCloudify;
 import timeGUI.CovistoTimeselectPanel;
-import utility.PreRoiobject;
 import zGUI.CovistoZselectPanel;
 
 public class DOGSeg extends SwingWorker<Void, Void> {
@@ -34,60 +30,90 @@ public class DOGSeg extends SwingWorker<Void, Void> {
 
 	@Override
 	protected Void doInBackground() throws Exception {
+		
+		/**
+		 * 
+		 * 
+		 * Create a watershed object that defines the region of interest, then make a roi object inside that region to get the clouds, finally put it all together as a cloud object
+		 * and enumerate it all in a list and a hashmap for that time.
+		 */
+	
+		
+		String uniqueID = Integer.toString(CovistoZselectPanel.thirdDimension) + Integer.toString(CovistoTimeselectPanel.fourthDimension);
+		
+		// Make the watershed object
+		
+		StaticMethods.GetPixelList(parent, parent.IntSegoriginalimg);
+		
+		
+		Iterator<Integer> setiter = parent.pixellist.iterator();
+		 parent.overlay.clear();
+		 
+		 ArrayList<CloudObject> Allclouds = new ArrayList<CloudObject>();
+		while (setiter.hasNext()) {
+
+			int label = setiter.next();
+		
+			// Get the region 
+						Watershedobject current = Watershedobject.CurrentLabelImage(parent, parent.IntSegoriginalimg, label);
+						
+						
+		
 			final DogDetection.ExtremaType type;
 			if (CovistoDogPanel.lookForMaxima)
 				type = DogDetection.ExtremaType.MINIMA;
 			else
 				type = DogDetection.ExtremaType.MAXIMA;
 			CovistoDogPanel.sigma2 = utility.ScrollbarUtils.computeSigma2(CovistoDogPanel.sigma, parent.sensitivity);
-			final DogDetection<FloatType> newdog = new DogDetection<FloatType>(Views.extendBorder(parent.CurrentViewOrig),
+			final DogDetection<FloatType> newdog = new DogDetection<FloatType>(Views.extendBorder(current.source),
 					parent.interval, new double[] { 1, 1 }, CovistoDogPanel.sigma, CovistoDogPanel.sigma2, type, CovistoDogPanel.threshold, true);
-			parent.overlay.clear();
 			parent.peaks = newdog.getSubpixelPeaks();
+			parent.Rois = utility.FinderUtils.getcurrentRois(parent.peaks, CovistoDogPanel.sigma, CovistoDogPanel.sigma2);
+			ArrayList<RoiObject> currentLabelObject = new ArrayList<RoiObject>();
+			for(Roi roi : parent.Rois) {
+				
+				double[] centroid = roi.getContourCentroid();
+				
+				double Intensity = StaticMethods.getIntensity(parent.CurrentViewOrig, roi);
+				
+				double numPixels = StaticMethods.getNumberofPixels(parent.CurrentViewOrig, roi);
+				
+				double meanIntensity = Intensity / numPixels;
+				
+				RoiObject currentRoiobject = new RoiObject(roi, centroid, meanIntensity, Intensity, numPixels);
+				
+				currentLabelObject.add(currentRoiobject);
+				
+
+				roi.setStrokeColor(parent.colorDrawMser);
+				parent.overlay.add(roi);
+				
+				
+			}
+			CloudObject currentCloud = new CloudObject(parent.IntSegoriginalimg, currentLabelObject, current.centroid, current.NumPixels, current.totalIntensity, current.meanIntensity,
+					CovistoZselectPanel.thirdDimension, CovistoTimeselectPanel.fourthDimension, label);
+			Allclouds.add(currentCloud);
+			
+		}
+
+		  parent.ZTRois.put(uniqueID, Allclouds);
+		
+
+		
+
+		
+			parent.imp.setOverlay(parent.overlay);
+			parent.imp.updateAndDraw();
+			
+			
+			
+				utility.CovsitoProgressBar.CovistoSetProgressBar(jpb, "Done");
 		return null;
 	}
 
 	@Override
 	protected void done() {
-			parent.overlay.clear();
-
-			parent.Rois = utility.FinderUtils.getcurrentRois(parent.peaks, CovistoDogPanel.sigma, CovistoDogPanel.sigma2);
-
-			parent.CurrentCloudobject = new ArrayList<CloudObject>();
-			for (int index = 0; index < parent.peaks.size(); ++index) {
-
-				Roi or = parent.Rois.get(index);
-
-				or.setStrokeColor(parent.colorDrawDog);
-				parent.overlay.add(or);
-			}
-
-			for (Roi currentroi : parent.Rois) {
-
-				final double[] geocenter = currentroi.getContourCentroid();
-				final Pair<Double, Integer> Intensityandpixels = CloudObject.getIntensity(currentroi, parent.CurrentViewOrig);
-				final double intensity = Intensityandpixels.getA();
-				final double numberofpixels = Intensityandpixels.getB();
-				final double averageintensity = intensity / numberofpixels;
-				CloudObject currentobject = new CloudObject(currentroi, geocenter, numberofpixels, intensity, averageintensity, CovistoZselectPanel.thirdDimension, CovistoTimeselectPanel.fourthDimension);
-				parent.CurrentCloudobject.add(currentobject);
-			}
-			for (Map.Entry<String, ArrayList<CloudObject>> entry : parent.ZTRois.entrySet()) {
-
-				ArrayList<CloudObject> current = entry.getValue();
-				for (CloudObject currentroi : current) {
-
-					if (currentroi.fourthDimension == CovistoTimeselectPanel.fourthDimension && currentroi.thirdDimension == CovistoZselectPanel.thirdDimension) {
-
-						currentroi.roi.setStrokeColor(parent.colorSnake);
-						parent.overlay.add(currentroi.roi);
-						
-					}
-
-				}
-			}
-			parent.imp.setOverlay(parent.overlay);
-			parent.imp.updateAndDraw();
+			
 	
 		try {
 			get();

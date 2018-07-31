@@ -1,5 +1,6 @@
 package cloudFinder;
 
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import ij.gui.Roi;
@@ -9,6 +10,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
@@ -16,23 +18,43 @@ import net.imglib2.view.Views;
 public class CloudObject extends AbstractEuclideanSpace implements RealLocalizable, Comparable<CloudObject> {
 
 
+	public RandomAccessibleInterval<IntType> Intimg;
 	public double[] geometriccenter;
 	public double area;
 	public double totalintensity;
 	public double averageintensity;
 	public int thirdDimension;
 	public int fourthDimension;
-	public Roi roi;
+	public ArrayList<RoiObject> roiobject;
+	public int label;
 	
-	public CloudObject(final Roi roi, final double[] geomtericcenter, final double area, final double totalintensity, final double averageintensity, final int thirdDimension, final int fourthDimension) {
+	/**
+	 * 
+	 * Integer image with the label, geometric center, intensity and area are for the image
+	 * Roi object contains the properties of Rois inside that integer image
+	 * 
+	 * @param Intimg
+	 * @param roiobject
+	 * @param geomtericcenter
+	 * @param area
+	 * @param totalintensity
+	 * @param averageintensity
+	 * @param thirdDimension
+	 * @param fourthDimension
+	 */
+	
+	public CloudObject(final RandomAccessibleInterval<IntType> Intimg, final ArrayList<RoiObject> roiobject, final double[] geomtericcenter, 
+			final double area, final double totalintensity, final double averageintensity, final int thirdDimension, final int fourthDimension, final int label) {
 		super(3);
-        this.roi = roi;
+		this.Intimg = Intimg;
+        this.roiobject = roiobject;
         this.geometriccenter = geomtericcenter;
         this.area = area;
         this.totalintensity = totalintensity;
         this.averageintensity = averageintensity;
         this.thirdDimension = thirdDimension;
         this.fourthDimension = fourthDimension;
+        this.label = label;
 	}
 
 	@Override

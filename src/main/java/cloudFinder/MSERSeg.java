@@ -1,21 +1,17 @@
 package cloudFinder;
 
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.JProgressBar;
 import javax.swing.SwingWorker;
 
 import ij.gui.Roi;
-import interactivePreprocessing.InteractiveMethods;
-import interactivePreprocessing.InteractiveMethods.ValueChange;
 import mserGUI.CovistoMserPanel;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
-import net.imglib2.util.Pair;
 import pluginTools.InteractiveCloudify;
 import timeGUI.CovistoTimeselectPanel;
-import utility.PreRoiobject;
 import zGUI.CovistoZselectPanel;
 
 public class MSERSeg extends SwingWorker<Void, Void> {
@@ -32,58 +28,84 @@ public class MSERSeg extends SwingWorker<Void, Void> {
 
 	@Override
 	protected Void doInBackground() throws Exception {
-		if (CovistoMserPanel.darktobright)
-
-			parent.newtree = MserTree.buildMserTree(parent.newimg, CovistoMserPanel.delta, CovistoMserPanel.minSize, CovistoMserPanel.maxSize,
-					CovistoMserPanel.Unstability_Score, CovistoMserPanel.minDiversity, true);
-
-		else
-
-			parent.newtree = MserTree.buildMserTree(parent.newimg, CovistoMserPanel.delta, CovistoMserPanel.minSize, CovistoMserPanel.maxSize,
-					CovistoMserPanel.Unstability_Score, CovistoMserPanel.minDiversity, false);
+		
+		/**
+		 * 
+		 * 
+		 * Create a watershed object that defines the region of interest, then make a roi object inside that region to get the clouds, finally put it all together as a cloud object
+		 * and enumerate it all in a list and a hashmap for that time.
+		 */
+	
+		
+		String uniqueID = Integer.toString(CovistoZselectPanel.thirdDimension) + Integer.toString(CovistoTimeselectPanel.fourthDimension);
+		
+		// Make the watershed object
+		
+		StaticMethods.GetPixelList(parent, parent.IntSegoriginalimg);
+		
+		
+		Iterator<Integer> setiter = parent.pixellist.iterator();
 		 parent.overlay.clear();
+		 
+		 ArrayList<CloudObject> Allclouds = new ArrayList<CloudObject>();
+		while (setiter.hasNext()) {
+
+			int label = setiter.next();
+
+			// Get the region 
+			Watershedobject current = Watershedobject.CurrentLabelImage(parent, parent.IntSegoriginalimg, label);
+			
+			parent.newimg = utility.CovistoSlicer.PREcopytoByteImage(current.source);
+			
+			if (CovistoMserPanel.darktobright)
+
+				parent.newtree = MserTree.buildMserTree(parent.newimg, CovistoMserPanel.delta, CovistoMserPanel.minSize, CovistoMserPanel.maxSize,
+						CovistoMserPanel.Unstability_Score, CovistoMserPanel.minDiversity, true);
+
+			else
+
+				parent.newtree = MserTree.buildMserTree(parent.newimg, CovistoMserPanel.delta, CovistoMserPanel.minSize, CovistoMserPanel.maxSize,
+						CovistoMserPanel.Unstability_Score, CovistoMserPanel.minDiversity, false);
+			
+
 			parent.Rois = utility.FinderUtils.getcurrentRois(parent.newtree);
-
-			parent.CurrentCloudobject = new ArrayList<CloudObject>();
-			ArrayList<double[]> centerRoi = utility.FinderUtils.getRoiMean(parent.newtree);
 			
-			
-			
-			
-			for (int index = 0; index < centerRoi.size(); ++index) {
-
-				Roi or = parent.Rois.get(index);
-
-				or.setStrokeColor(parent.colorDrawMser);
-				parent.overlay.add(or);
+			ArrayList<RoiObject> currentLabelObject = new ArrayList<RoiObject>();
+			for(Roi roi : parent.Rois) {
 				
-			
-			}
-			for (Roi currentroi: parent.Rois) {
+				double[] centroid = roi.getContourCentroid();
 				
-				final double[] geocenter = currentroi.getContourCentroid();
-				final Pair<Double, Integer> Intensityandpixels = CloudObject.getIntensity(currentroi, parent.CurrentViewOrig);
-				final double intensity = Intensityandpixels.getA();
-				final double numberofpixels = Intensityandpixels.getB();
-				final double averageintensity = intensity / numberofpixels;
-				CloudObject currentobject = new CloudObject(currentroi, geocenter, numberofpixels, intensity, averageintensity, CovistoZselectPanel.thirdDimension, CovistoTimeselectPanel.fourthDimension);
-				parent.CurrentCloudobject.add(currentobject);
+				double Intensity = StaticMethods.getIntensity(parent.CurrentViewOrig, roi);
+				
+				double numPixels = StaticMethods.getNumberofPixels(parent.CurrentViewOrig, roi);
+				
+				double meanIntensity = Intensity / numPixels;
+				
+				RoiObject currentRoiobject = new RoiObject(roi, centroid, meanIntensity, Intensity, numPixels);
+				
+				currentLabelObject.add(currentRoiobject);
+				
+
+				roi.setStrokeColor(parent.colorDrawMser);
+				parent.overlay.add(roi);
+				
+				
 			}
+			
+			
+			CloudObject currentCloud = new CloudObject(parent.IntSegoriginalimg, currentLabelObject, current.centroid, current.NumPixels, current.totalIntensity, current.meanIntensity,
+					CovistoZselectPanel.thirdDimension, CovistoTimeselectPanel.fourthDimension, label);
+			Allclouds.add(currentCloud);
+			
+		}
+		
+		
+		  parent.ZTRois.put(uniqueID, Allclouds);
+		
 
-			for (Map.Entry<String, ArrayList<CloudObject>> entry : parent.ZTRois.entrySet()) {
+		
 
-				ArrayList<CloudObject> current = entry.getValue();
-				for (CloudObject currentroi : current) {
-
-					if (currentroi.fourthDimension == CovistoTimeselectPanel.fourthDimension && currentroi.thirdDimension == CovistoZselectPanel.thirdDimension) {
-
-						currentroi.roi.setStrokeColor(parent.colorSnake);
-						parent.overlay.add(currentroi.roi);
-						
-					}
-
-				}
-			}
+		
 			parent.imp.setOverlay(parent.overlay);
 			parent.imp.updateAndDraw();
 			

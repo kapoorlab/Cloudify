@@ -3,6 +3,8 @@ package pluginTools;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -49,7 +51,6 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public int ndims;
 	public final int scrollbarSize = 1000;
 	public HashMap<String, ArrayList<CloudObject>> ZTRois;
-	public ArrayList<CloudObject> CurrentCloudobject;
 	public RandomAccessibleInterval<FloatType> originalimg;
 	public RandomAccessibleInterval<FloatType> originalSecimg;																			
 	public RandomAccessibleInterval<FloatType> CurrentViewOrig;
@@ -67,7 +68,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public Color colorSnake = Color.YELLOW;
 	public Color colorTrack = Color.GREEN;
 	public Overlay overlay;
-	
+	public Set<Integer> pixellist;
 	
 	
 	public static enum ValueChange {
@@ -76,13 +77,19 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		
 	}
 
+	/**
+	 * Current constructor, two channel images and an integer labelled image for nuclei
+	 * @param originalimg
+	 * @param originalSecimg
+	 * @param IntSegoriginalSecimg
+	 */
 	public InteractiveCloudify(final RandomAccessibleInterval<FloatType> originalimg,
-			final RandomAccessibleInterval<FloatType> Segoriginalimg,
-			final RandomAccessibleInterval<FloatType> SegoriginalSecimg) {
+			final RandomAccessibleInterval<FloatType> originalSecimg,
+			final RandomAccessibleInterval<IntType> IntSegoriginalSecimg) {
 
 		this.originalimg = originalimg;
-		this.Segoriginalimg = Segoriginalimg;
-		this.SegoriginalSecimg = SegoriginalSecimg;
+		this.originalSecimg = originalSecimg;
+		this.IntSegoriginalSecimg = IntSegoriginalSecimg;
 		this.ndims = originalimg.numDimensions();
 	}
 
@@ -119,8 +126,8 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		jpb = new JProgressBar();
 		interval = new FinalInterval(originalimg.dimension(0), originalimg.dimension(1));
 		peaks = new ArrayList<RefinedPeak<Point>>();
-		CurrentCloudobject = new ArrayList<CloudObject>();
 		ZTRois = new HashMap<String, ArrayList<CloudObject>>();
+		pixellist = new HashSet<Integer>();
 		
 		if (ndims < 3) {
 
@@ -151,6 +158,10 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		CurrentViewOrig = utility.CovistoSlicer.getCurrentView(originalimg, CovistoTimeselectPanel.fourthDimension,
 				CovistoZselectPanel.thirdDimensionSize, CovistoZselectPanel.thirdDimension,
 				CovistoTimeselectPanel.fourthDimensionSize);
+		
+		IntSegoriginalimg = utility.CovistoSlicer.getCurrentView(IntSegoriginalimg, CovistoTimeselectPanel.fourthDimension,
+					CovistoZselectPanel.thirdDimensionSize, CovistoZselectPanel.thirdDimension,
+					CovistoTimeselectPanel.fourthDimensionSize);
 
 		imp = ImageJFunctions.show(CurrentViewOrig);
 	
@@ -166,6 +177,17 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		
 		if (change == ValueChange.FOURTHDIMmouse || change == ValueChange.THIRDDIMmouse) {
 
+			
+			CurrentViewOrig = utility.CovistoSlicer.getCurrentView(originalimg, CovistoTimeselectPanel.fourthDimension,
+					CovistoZselectPanel.thirdDimensionSize, CovistoZselectPanel.thirdDimension,
+					CovistoTimeselectPanel.fourthDimensionSize);
+			
+			IntSegoriginalimg = utility.CovistoSlicer.getCurrentView(IntSegoriginalimg, CovistoTimeselectPanel.fourthDimension,
+						CovistoZselectPanel.thirdDimensionSize, CovistoZselectPanel.thirdDimension,
+						CovistoTimeselectPanel.fourthDimensionSize);
+			
+			
+			
 			if (imp == null) {
 				imp = ImageJFunctions.show(CurrentViewOrig);
 

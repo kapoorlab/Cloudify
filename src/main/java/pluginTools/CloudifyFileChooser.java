@@ -72,7 +72,7 @@ public class CloudifyFileChooser extends JPanel {
 
 	  
 	  
-	  public String chooseSegstring = "Segmentation Images (C1 and C2)";
+	  public String chooseSegstring = "Segmentation Images (Cells and Clouds)"; 
 	  public Border chooseSeg = new CompoundBorder(new TitledBorder(chooseSegstring),
 				new EmptyBorder(c.insets));
 	  public String chooseoriginalfilestring = "Choose original Image (C1 and C2)";

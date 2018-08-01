@@ -38,6 +38,7 @@ public class LinkobjectListener implements ActionListener {
 
 	public void go() {
 
+		System.out.println("Linking Cloud objects");
 		TrackResult track = new TrackResult(parent);
 		track.execute();
 		

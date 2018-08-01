@@ -22,10 +22,9 @@ public class CloudFinderMSER<T extends RealType<T> & NativeType<T>> implements C
 	
 	
 	public CloudFinderMSER(final InteractiveCloudify parent, 
-			final JProgressBar jpb, int thirdDimension, int fourthDimension) {
+			final JProgressBar jpb,  int thirdDimension, int fourthDimension) {
 
 		this.parent = parent;
-	
 		this.thirdDimension = thirdDimension;
 		this.fourthDimension = fourthDimension;
 		this.jpb = jpb;
@@ -57,6 +56,8 @@ public class CloudFinderMSER<T extends RealType<T> & NativeType<T>> implements C
 
 	@Override
 	public boolean process() {
+		
+		
 		MSERSeg computeMSER = new MSERSeg(parent, jpb);
 		computeMSER.execute();
 		return true;

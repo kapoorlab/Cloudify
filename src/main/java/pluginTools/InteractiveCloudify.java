@@ -10,6 +10,7 @@ import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.text.NumberFormat;
@@ -19,6 +20,8 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -60,6 +63,7 @@ import net.imglib2.Point;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
 import net.imglib2.algorithm.localextrema.RefinedPeak;
+import net.imglib2.algorithm.stats.Normalize;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
@@ -68,6 +72,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.view.Views;
 import timeGUI.CovistoTimeselectPanel;
+import watershedGUI.CovistoWatershedPanel;
 import zGUI.CovistoZselectPanel;
 
 public class InteractiveCloudify extends JPanel implements PlugIn {
@@ -135,8 +140,14 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public RandomAccessibleInterval<IntType> CurrentViewIntSegoriginalimg;
 	public ArrayList<Pair<String, CloudObject>> Tracklist;
 	
-	public boolean showMSER = true;
-	public boolean showDOG = false;
+	public boolean showMSER = false;
+	public boolean showDOG = true;
+
+		
+		
+		
+	
+	
 	public MserTree<FloatType> newtree;
 	public Color colorDrawMser = Color.green;
 	public Color colorDrawDog = Color.red;
@@ -170,7 +181,9 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		this.IntSegoriginalimg = IntSegoriginalimg;
 		this.Segoriginalimg = Segoriginalimg;
 		this.ndims = originalimg.numDimensions();
-		
+		FloatType minval = new FloatType(0);
+		FloatType maxval = new FloatType(255);
+		Normalize.normalize(Views.iterable(Segoriginalimg), minval, maxval);
 		this.chartIntensityA = utility.ChartMaker.makeChart(IntensityAdataset, "Cell + Cloud Intensity evolution", "Timepoint", "IntensityA");
 		this.jFreeChartFrameIntensityA = utility.ChartMaker.display(chartIntensityA, new Dimension(500, 500));
 		this.jFreeChartFrameIntensityA.setVisible(false);
@@ -419,6 +432,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		panelCont.add(panelFirst, "1");
 		panelCont.add(panelSecond, "2");
 		panelFirst.setLayout(layout);
+		panelSecond.setLayout(layout);
 		c.anchor = GridBagConstraints.BOTH;
 		c.ipadx = 35;
 
@@ -493,10 +507,40 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
 
 		KalmanPanel = CovistoKalmanPanel.KalmanPanel();
+		
+		
+		JPanel controlprev = new JPanel();
+		JPanel controlnext = new JPanel();
 
+		controlprev.setLayout(layout);
+		controlnext.setLayout(layout);
+		controlprev.add(new JButton(new AbstractAction("\u22b2Prev") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CardLayout cl = (CardLayout) panelCont.getLayout();
+				cl.previous(panelCont);
+			}
+		}));
+
+		controlnext.add(new JButton(new AbstractAction("Next\u22b3") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CardLayout cl = (CardLayout) panelCont.getLayout();
+				cl.next(panelCont);
+			}
+		}));
+		panelFirst.add(controlnext, new GridBagConstraints(3, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		panelSecond.add(KalmanPanel, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		panelSecond.add(PanelSelectFile, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		
+		
+		panelSecond.add(controlprev, new GridBagConstraints(0, 10, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		CovistoKalmanPanel.Timetrack.addActionListener(new LinkobjectListener(this));
 		CovistoKalmanPanel.lostframe.addTextListener(new PRELostFrameListener(this));
 		CovistoKalmanPanel.alphaS.addAdjustmentListener(new PREAlphaListener(this, CovistoKalmanPanel.alphaText,
@@ -577,7 +621,24 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 
 		Cardframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		cl.show(panelCont, "1");
-
+		CovistoDogPanel.sigmaslider.setVisible(true);
+		CovistoDogPanel.thresholdslider.setVisible(true);
+		CovistoDogPanel.findmaxima.setVisible(true);
+		CovistoDogPanel.findminima.setVisible(true);
+		
+		CovistoMserPanel.deltaS.setVisible(false);
+		CovistoMserPanel.Unstability_ScoreS.setVisible(false);
+		CovistoMserPanel.minDiversityS.setVisible(false);
+		CovistoMserPanel.minSizeS.setVisible(false);
+		CovistoMserPanel.maxSizeS.setVisible(false);
+		CovistoMserPanel.findminimaMser.setVisible(false);
+		CovistoMserPanel.findmaximaMser.setVisible(false);
+		
+		CovistoWatershedPanel.displayWater.setVisible(false);
+		CovistoWatershedPanel.displayBinary.setVisible(false);
+		CovistoWatershedPanel.displayDist.setVisible(false);
+		CovistoWatershedPanel.autothreshold.setVisible(false);
+		CovistoWatershedPanel.thresholdWaterslider.setVisible(false);
 		Cardframe.add(panelCont, "Center");
 		Cardframe.add(jpb, "Last");
 		panelFirst.setVisible(true);

@@ -81,10 +81,9 @@ public class StaticMethods {
 
 			int x = (int) position[0];
 			int y = (int) position[1];
-
 			if (roi.contains(x, y)) {
 
-				Intensity += currentcursor.get().getRealDouble();
+				Intensity += currentcursor.get().get();
 
 			}
 

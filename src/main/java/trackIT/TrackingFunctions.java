@@ -41,7 +41,7 @@ public class TrackingFunctions {
 
 		KFsearch Tsearch = new KFsearch(colllist, parent.UserchosenCostFunction,  parent.maxSearchradius ,
 				 parent.maxSearchradius, 
-				 CovistoZselectPanel.thirdDimensionSize / 4, parent.AccountedZ, parent.jpb);
+				 parent.missedframes, parent.AccountedZ, parent.jpb);
 		Tsearch.process();
 		SimpleWeightedGraph<CloudObject, DefaultWeightedEdge> simplegraph = Tsearch.getResult();
 

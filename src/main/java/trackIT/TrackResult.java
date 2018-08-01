@@ -41,6 +41,7 @@ public class TrackResult extends SwingWorker<Void, Void> {
 		parent.table.removeAll();
 		parent.Tracklist.clear();
 
+		System.out.println("Making tracks");
 		TrackingFunctions track = new TrackingFunctions(parent);
 		SimpleWeightedGraph<CloudObject, DefaultWeightedEdge> simplegraph = track.Trackfunction();
 
@@ -90,6 +91,7 @@ public class TrackResult extends SwingWorker<Void, Void> {
 
 					CloudObject currentangle = Angleiter.next();
 					parent.Tracklist.add(new ValuePair<String, CloudObject>(Integer.toString(id), currentangle));
+					System.out.println(id + " " + currentangle.averageintensity);
 				}
 				Collections.sort(parent.Tracklist, ThirdDimcomparison);
 

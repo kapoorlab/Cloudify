@@ -55,7 +55,12 @@ public class CloudFinderDOG<T extends RealType<T> & NativeType<T>> implements Cl
 
 		
 		DOGSeg computeDOG = new DOGSeg(parent, jpb);
-		computeDOG.execute();
+		try {
+			computeDOG.execute();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return true;
 	}

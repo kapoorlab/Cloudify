@@ -13,6 +13,7 @@ import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
+import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import pluginTools.InteractiveCloudify;
 import pluginTools.InteractiveCloudify.ValueChange;
@@ -35,16 +36,16 @@ public class ExecuteMser extends SwingWorker<Void, Void> {
 			parent.apply3D = true;
 
 		
-
+			int percent = 0;
 			for (int t = CovistoTimeselectPanel.fourthDimensionsliderInit; t <= CovistoTimeselectPanel.fourthDimensionSize; ++t) {
 
 				for (int z = CovistoZselectPanel.thirdDimensionsliderInit; z <= CovistoZselectPanel.thirdDimensionSize; ++z) {
-
+					
+					parent.pixellist.clear();
+					++percent;
 					CovistoZselectPanel.thirdDimension = z;
 					CovistoTimeselectPanel.fourthDimension = t;
-
-				
-
+					utility.CovsitoProgressBar.CovistoSetProgressBar(parent.jpb, 100 * percent/ CovistoZselectPanel.thirdDimensionSize, "Computing: " + z + " / " + CovistoZselectPanel.thirdDimensionSize);
 					// UnsignedByteType image created here
 					parent.updatePreview(ValueChange.THIRDDIMmouse);
 					
@@ -61,9 +62,9 @@ public class ExecuteMser extends SwingWorker<Void, Void> {
 
 		protected void processSlice(int z, int t) {
 
-			CloudFinderMSER<UnsignedByteType> ComputeDOG = new CloudFinderMSER<UnsignedByteType>(parent, parent.jpb,
+			CloudFinderMSER<FloatType> ComputeMSER = new CloudFinderMSER<FloatType>(parent, parent.jpb,
 					 z, t);
-			ComputeDOG.process();
+			ComputeMSER.process();
 
 			
 
@@ -74,6 +75,7 @@ public class ExecuteMser extends SwingWorker<Void, Void> {
 			try {
 
 				parent.apply3D = false;
+				utility.CovsitoProgressBar.CovistoSetProgressBar(parent.jpb,"Done");
 				get();
 			} catch (ExecutionException | InterruptedException e) {
 				e.printStackTrace();

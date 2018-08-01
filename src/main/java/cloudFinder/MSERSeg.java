@@ -15,7 +15,7 @@ import pluginTools.InteractiveCloudify;
 import timeGUI.CovistoTimeselectPanel;
 import zGUI.CovistoZselectPanel;
 
-public class MSERSeg extends SwingWorker<Void, Void> {
+public class MSERSeg {
 
 	final InteractiveCloudify parent;
 	final JProgressBar jpb;
@@ -27,8 +27,7 @@ public class MSERSeg extends SwingWorker<Void, Void> {
 
 	}
 
-	@Override
-	protected Void doInBackground() throws Exception {
+	public void execute()  {
 		
 		/**
 		 * 
@@ -41,7 +40,7 @@ public class MSERSeg extends SwingWorker<Void, Void> {
 		String uniqueID = Integer.toString(CovistoZselectPanel.thirdDimension) + Integer.toString(CovistoTimeselectPanel.fourthDimension);
 		
 		// Make the watershed object
-		
+	
 		StaticMethods.GetPixelList(parent, parent.CurrentViewIntSegoriginalimg);
 		
 		Iterator<Integer> setiter = parent.pixellist.iterator();
@@ -109,22 +108,10 @@ public class MSERSeg extends SwingWorker<Void, Void> {
 			
 				utility.CovsitoProgressBar.CovistoSetProgressBar(jpb, "Done");
 			
-		return null;
 	}
 
-	@Override
-	protected void done() {
-		
-       
-		
-		try {
-			get();
-		} catch (InterruptedException e) {
+	
 
-		} catch (ExecutionException e) {
-
-		}
-
-	}
+	
 
 }

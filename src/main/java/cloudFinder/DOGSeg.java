@@ -16,7 +16,7 @@ import pluginTools.InteractiveCloudify;
 import timeGUI.CovistoTimeselectPanel;
 import zGUI.CovistoZselectPanel;
 
-public class DOGSeg extends SwingWorker<Void, Void> {
+public class DOGSeg  {
 
 	final InteractiveCloudify parent;
 	final JProgressBar jpb;
@@ -28,8 +28,8 @@ public class DOGSeg extends SwingWorker<Void, Void> {
 
 	}
 
-	@Override
-	protected Void doInBackground() throws Exception {
+	
+	public void execute() {
 		
 		/**
 		 * 
@@ -69,6 +69,8 @@ public class DOGSeg extends SwingWorker<Void, Void> {
 					parent.interval, new double[] { 1, 1 }, CovistoDogPanel.sigma, CovistoDogPanel.sigma2, type, CovistoDogPanel.threshold, true);
 			parent.peaks = newdog.getSubpixelPeaks();
 			parent.Rois = utility.FinderUtils.getcurrentRois(parent.peaks, CovistoDogPanel.sigma, CovistoDogPanel.sigma2);
+			
+			
 			ArrayList<RoiObject> currentLabelObject = new ArrayList<RoiObject>();
 			for(Roi roi : parent.Rois) {
 				
@@ -107,22 +109,9 @@ public class DOGSeg extends SwingWorker<Void, Void> {
 			
 			
 			
-				utility.CovsitoProgressBar.CovistoSetProgressBar(jpb, "Done");
-		return null;
+				
 	}
 
-	@Override
-	protected void done() {
-			
 	
-		try {
-			get();
-		} catch (InterruptedException e) {
-
-		} catch (ExecutionException e) {
-
-		}
-
-	}
 
 }

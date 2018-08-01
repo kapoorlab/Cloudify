@@ -96,7 +96,7 @@ public class MSERSeg extends SwingWorker<Void, Void> {
 		}
 		
 		
-		  parent.ZTRois.put(uniqueID, Allclouds);
+		  parent.AllClouds.put(uniqueID, Allclouds);
 		
 
 		

@@ -1,12 +1,17 @@
 package pluginTools;
 
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Checkbox;
 import java.awt.CheckboxGroup;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,14 +22,20 @@ import java.util.Set;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.xy.XYSeriesCollection;
+
 import cloudFinder.CloudObject;
 import cloudFinder.DOGSeg;
 import cloudFinder.MSERSeg;
+import costMatrix.CostFunction;
 import dogGUI.CovistoDogPanel;
 import ij.ImageJ;
 import ij.ImagePlus;
@@ -33,10 +44,16 @@ import ij.gui.Overlay;
 import ij.gui.Roi;
 import ij.io.Opener;
 import ij.plugin.PlugIn;
-import interactivePreprocessing.DoDOGListener;
-import interactivePreprocessing.DoMSERListener;
+import kalmanGUI.CovistoKalmanPanel;
+import kalmanTrackListeners.LinkobjectListener;
+import kalmanTrackListeners.PREAlphaListener;
+import kalmanTrackListeners.PREBetaListeners;
+import kalmanTrackListeners.PREIniSearchListener;
+import kalmanTrackListeners.PRELostFrameListener;
+import kalmanTrackListeners.PREMaxSearchTListener;
 import listeners.*;
 import mserGUI.CovistoMserPanel;
+import nearestNeighbourGUI.CovistoNearestNPanel;
 import net.imglib2.Cursor;
 import net.imglib2.FinalInterval;
 import net.imglib2.Point;
@@ -48,6 +65,7 @@ import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.Pair;
 import net.imglib2.view.Views;
 import timeGUI.CovistoTimeselectPanel;
 import zGUI.CovistoZselectPanel;
@@ -69,7 +87,39 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public int ndims;
 	public NumberFormat nf;
 	public final int scrollbarSize = 1000;
-	public HashMap<String, ArrayList<CloudObject>> ZTRois;
+	public HashMap<String, ArrayList<CloudObject>> AllClouds;
+	public CostFunction<CloudObject, CloudObject> UserchosenCostFunction;
+	public HashMap<String, Integer> AccountedZ;
+	// Cost function parameters
+	public float alphaMin = 0;
+	public float alphaMax = 1;
+	public float betaMin = 0;
+	public float betaMax = 1;
+	public JTable table;
+	// Kalman parameters
+	public float maxSearchradius = 100;
+	public float maxSearchradiusS = 10;
+	public int missedframes = 200;
+	public int maxSearchradiusInit = (int) maxSearchradius;
+	public float maxSearchradiusMin = 1;
+	public float maxSearchradiusMax = maxSearchradius;
+	public float maxSearchradiusMinS = 1;
+	public float maxSearchradiusMaxS = maxSearchradius;
+	public MouseMotionListener ml;
+	public HashMap<String, CloudObject> Finalresult;
+	public MouseListener mvl;
+	public int[] Clickedpoints;
+	
+	
+	public Frame jFreeChartFrameIntensityA;
+	public Frame jFreeChartFrameIntensityB;
+	
+	public JFreeChart chartIntensityA;
+	public JFreeChart chartIntensityB;
+	
+	public XYSeriesCollection IntensityAdataset;
+	public XYSeriesCollection IntensityBdataset;
+	
 	public RandomAccessibleInterval<FloatType> originalimg;
 	public RandomAccessibleInterval<FloatType> originalSecimg;
 	
@@ -83,7 +133,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	
 	public RandomAccessibleInterval<FloatType> CurrentViewSegoriginalimg;
 	public RandomAccessibleInterval<IntType> CurrentViewIntSegoriginalimg;
-	
+	public ArrayList<Pair<String, CloudObject>> Tracklist;
 	
 	public boolean showMSER = true;
 	public boolean showDOG = false;
@@ -95,10 +145,10 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public Color colorTrack = Color.GREEN;
 	public Overlay overlay;
 	public Set<Integer> pixellist;
-
+	public ImageStack prestack;
 	public static enum ValueChange {
 
-		MSER, DOG, FOURTHDIMmouse, THIRDDIMmouse;
+		MSER, DOG, FOURTHDIMmouse, THIRDDIMmouse, ALPHA, BETA;
 
 	}
 
@@ -120,6 +170,14 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		this.IntSegoriginalimg = IntSegoriginalimg;
 		this.Segoriginalimg = Segoriginalimg;
 		this.ndims = originalimg.numDimensions();
+		
+		this.chartIntensityA = utility.ChartMaker.makeChart(IntensityAdataset, "Cell + Cloud Intensity evolution", "Timepoint", "IntensityA");
+		this.jFreeChartFrameIntensityA = utility.ChartMaker.display(chartIntensityA, new Dimension(500, 500));
+		this.jFreeChartFrameIntensityA.setVisible(false);
+		
+		this.chartIntensityB = utility.ChartMaker.makeChart(IntensityBdataset, "Cell - Cloud Intensity evolution", "Timepoint", "IntensityB");
+		this.jFreeChartFrameIntensityB = utility.ChartMaker.display(chartIntensityB, new Dimension(500, 500));
+		this.jFreeChartFrameIntensityB.setVisible(false);
 	}
 
 	
@@ -129,11 +187,14 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(3);
 		jpb = new JProgressBar();
+		Clickedpoints = new int[2];
 		interval = new FinalInterval(originalimg.dimension(0), originalimg.dimension(1));
 		peaks = new ArrayList<RefinedPeak<Point>>();
-		ZTRois = new HashMap<String, ArrayList<CloudObject>>();
+		AllClouds = new HashMap<String, ArrayList<CloudObject>>();
 		pixellist = new HashSet<Integer>();
-
+		AccountedZ = new HashMap<String, Integer>();
+		Finalresult = new HashMap<String, CloudObject>();
+		Tracklist = new ArrayList<Pair<String, CloudObject>>();
 		if (ndims < 3) {
 
 			CovistoZselectPanel.thirdDimensionSize = 0;
@@ -156,7 +217,8 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 			CovistoZselectPanel.thirdDimension = 1;
 			CovistoZselectPanel.thirdDimensionSize = (int) originalimg.dimension(2);
 			CovistoTimeselectPanel.fourthDimensionSize = (int) originalimg.dimension(3);
-
+			prestack = new ImageStack((int) originalimg.dimension(0), (int) originalimg.dimension(1),
+					java.awt.image.ColorModel.getRGBdefault());
 		}
 
 		CurrentViewOrig = utility.CovistoSlicer.getCurrentView(originalimg,  CovistoZselectPanel.thirdDimension,
@@ -195,7 +257,13 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		int localthirddim = CovistoZselectPanel.thirdDimension, localfourthdim = CovistoTimeselectPanel.fourthDimension;
 
 		if (change == ValueChange.FOURTHDIMmouse || change == ValueChange.THIRDDIMmouse) {
-
+			
+			
+			String ZID = Integer.toString( CovistoZselectPanel.thirdDimension);
+			AccountedZ.put(ZID,  CovistoZselectPanel.thirdDimension);
+			
+			
+			
 			CurrentViewOrig = utility.CovistoSlicer.getCurrentView(originalimg,  CovistoZselectPanel.thirdDimension,
 					CovistoZselectPanel.thirdDimensionSize,CovistoTimeselectPanel.fourthDimension,
 					CovistoTimeselectPanel.fourthDimensionSize);
@@ -320,7 +388,11 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 
 	public JFrame Cardframe = new JFrame("Cloud Tracker");
 	public JPanel KalmanPanel = new JPanel();
+	
 	public JPanel panelFirst = new JPanel();
+	public JPanel panelSecond = new JPanel();
+	
+	public JPanel PanelSelectFile = new JPanel();
 	public JPanel panelCont = new JPanel();
 	public JPanel DetectionPanel = new JPanel();
 	public JPanel Zselect = new JPanel();
@@ -335,7 +407,8 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public final Insets insets = new Insets(10, 0, 0, 0);
 	public final GridBagLayout layout = new GridBagLayout();
 	public final GridBagConstraints c = new GridBagConstraints();
-
+	public JScrollPane scrollPane;
+	public Border selectfile = new CompoundBorder(new TitledBorder("Select Track"), new EmptyBorder(c.insets));
 	public void Card() {
 
 		CardLayout cl = new CardLayout();
@@ -344,6 +417,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		panelCont.setLayout(cl);
 
 		panelCont.add(panelFirst, "1");
+		panelCont.add(panelSecond, "2");
 		panelFirst.setLayout(layout);
 		c.anchor = GridBagConstraints.BOTH;
 		c.ipadx = 35;
@@ -353,6 +427,40 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		c.gridy = 1;
 		c.gridx = 0;
 
+		
+		Object[] colnames;
+		Object[][] rowvalues;
+		
+		colnames = new Object[] { "", "", "","",
+				"" };
+		rowvalues = new Object[0][colnames.length];
+		
+		if (Finalresult != null && Finalresult.size() > 0) {
+
+			rowvalues = new Object[Finalresult.size()][colnames.length];
+
+		}
+		
+		table = new JTable(rowvalues, colnames);
+		
+		
+		
+		table.setFillsViewportHeight(true);
+
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+		scrollPane = new JScrollPane(table);
+
+		scrollPane.getViewport().add(table);
+		scrollPane.setAutoscrolls(true);
+
+		PanelSelectFile.add(scrollPane, BorderLayout.CENTER);
+
+		PanelSelectFile.setBorder(selectfile);
+
+		panelSecond.add(PanelSelectFile, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
+		
 		Border methodborder = new CompoundBorder(new TitledBorder("Choose a colud finder"), new EmptyBorder(c.insets));
 		// Put time slider
 		Timeselect = CovistoTimeselectPanel.TimeselectPanel(ndims);
@@ -384,6 +492,35 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		panelFirst.add(MserPanel, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
 
+		KalmanPanel = CovistoKalmanPanel.KalmanPanel();
+
+		panelSecond.add(KalmanPanel, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		
+		CovistoKalmanPanel.Timetrack.addActionListener(new LinkobjectListener(this));
+		CovistoKalmanPanel.lostframe.addTextListener(new PRELostFrameListener(this));
+		CovistoKalmanPanel.alphaS.addAdjustmentListener(new PREAlphaListener(this, CovistoKalmanPanel.alphaText,
+				CovistoKalmanPanel.alphastring, CovistoKalmanPanel.alphaMin, CovistoKalmanPanel.alphaMax,
+				CovistoKalmanPanel.scrollbarSize, CovistoKalmanPanel.alphaS));
+		CovistoKalmanPanel.betaS.addAdjustmentListener(new PREBetaListeners(this, CovistoKalmanPanel.betaText,
+				CovistoKalmanPanel.betastring, CovistoKalmanPanel.betaMin, CovistoKalmanPanel.betaMax,
+				CovistoKalmanPanel.scrollbarSize, CovistoKalmanPanel.betaS));
+		
+		CovistoKalmanPanel.maxSearchKalman.addAdjustmentListener(new PREMaxSearchTListener(this,
+				CovistoKalmanPanel.maxSearchTextKalman, CovistoKalmanPanel.maxSearchstringKalman,
+				CovistoKalmanPanel.maxSearchradiusMin, CovistoKalmanPanel.maxSearchradiusMax,
+				CovistoKalmanPanel.scrollbarSize, CovistoKalmanPanel.maxSearchSS));
+		CovistoKalmanPanel.initialSearchS.addAdjustmentListener(new PREIniSearchListener(this,
+				CovistoKalmanPanel.iniSearchText, CovistoKalmanPanel.initialSearchstring,
+				CovistoKalmanPanel.initialSearchradiusMin, CovistoKalmanPanel.initialSearchradiusMax,
+				CovistoKalmanPanel.scrollbarSize, CovistoKalmanPanel.initialSearchS));
+		
+		
+		
+		
+		
+		
+		
 		CovistoDogPanel.findminima.addItemListener(new FindMinimaListener(this));
 		CovistoDogPanel.findmaxima.addItemListener(new FindMaximaListener(this));
 		CovistoMserPanel.findminimaMser.addItemListener(new FindMinimaMserListener(this));

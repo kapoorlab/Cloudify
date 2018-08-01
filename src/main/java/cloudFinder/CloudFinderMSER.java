@@ -35,7 +35,7 @@ public class CloudFinderMSER<T extends RealType<T> & NativeType<T>> implements C
 	@Override
 	public HashMap<String, ArrayList<CloudObject>> getResult() {
 		
-		return parent.ZTRois;
+		return parent.AllClouds;
 	}
 
 	@Override

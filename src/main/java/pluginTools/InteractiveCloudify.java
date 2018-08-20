@@ -41,6 +41,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 import cloudFinder.CloudObject;
 import cloudFinder.DOGSeg;
 import cloudFinder.MSERSeg;
+import cloudTracker.TrackModel;
 import costMatrix.CostFunction;
 import dogGUI.CovistoDogPanel;
 import ij.ImageJ;
@@ -134,7 +135,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public JFreeChart chartIntensityA;
 	public JFreeChart chartIntensityB;
 	
-	
+	public ImagePlus resultimp;
 	
 	public XYSeriesCollection IntensityAdataset;
 	public XYSeriesCollection IntensityBdataset;
@@ -173,7 +174,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		
 		
 	
-	
+	public TrackModel Globalmodel;
 	public MserTree<FloatType> newtree;
 	public Color colorDrawMser = Color.green;
 	public Color colorDrawDog = Color.red;

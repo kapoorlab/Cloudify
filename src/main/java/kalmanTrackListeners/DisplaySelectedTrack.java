@@ -15,7 +15,9 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import cloudDisplayer.DisplayTrack;
 import cloudFinder.Distance;
+import cloudTracker.TrackModel;
 import ij.gui.ImageCanvas;
 import net.imglib2.util.Pair;
 import pluginTools.InteractiveCloudify;
@@ -61,7 +63,7 @@ public class DisplaySelectedTrack {
 					
 					//Still to write this function
 					displayclicked(parent, parent.rowchoice);
-
+					
 					if (!parent.jFreeChartFrameIntensityA.isVisible())
 						parent.jFreeChartFrameIntensityA = utility.ChartMaker.display(parent.chartIntensityA, new Dimension(500, 500));
 					if (!parent.jFreeChartFrameIntensityB.isVisible())
@@ -184,6 +186,12 @@ public class DisplaySelectedTrack {
    		// Make something happen
    		parent.row = trackindex;
    		String ID = (String) parent.table.getValueAt(trackindex, 0);
+   		if(parent.resultimp!=null)
+			parent.resultimp.close();
+   		DisplayTrack display = new DisplayTrack(parent, parent.Globalmodel);
+		display.getImp();
+		
+		
    		ArrayList<Pair<String, double[]>> currentresultIntASec = new ArrayList<Pair<String, double[]>>();
 
    		for (Pair<String, double[]> currentInt : parent.resultIntensityASec) {

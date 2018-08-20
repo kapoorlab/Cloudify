@@ -127,6 +127,7 @@ public class TrackResult extends SwingWorker<Void, Void> {
 		int minid = Integer.MAX_VALUE;
 		int maxid = Integer.MIN_VALUE;
 		TrackModel model = new TrackModel(simplegraph);
+		
 		for (final Integer id : model.trackIDs(true)) {
 
 			if (id > maxid)
@@ -153,7 +154,7 @@ public class TrackResult extends SwingWorker<Void, Void> {
 
 			
 				model.setName(id, "Track" + id);
-
+				parent.Globalmodel = model;
 				final HashSet<CloudObject> Angleset = model.trackCloudObjects(id);
 
 				Iterator<CloudObject> Angleiter = Angleset.iterator();

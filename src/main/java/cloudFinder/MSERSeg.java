@@ -94,7 +94,7 @@ public class MSERSeg {
 	                
 	             SeccurrentLabelObject.add(SeccurrentRoiobject);
 				
-	             roi.setStrokeColor(parent.colorDrawMser);
+	            roi.setStrokeColor(parent.colorDrawMser);
 				parent.overlay.add(roi);
 				
 			}

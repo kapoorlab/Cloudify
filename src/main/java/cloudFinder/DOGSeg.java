@@ -54,7 +54,6 @@ public class DOGSeg  {
 		while (setiter.hasNext()) {
 
 			int label = setiter.next();
-		System.out.println(label + "Integer label");
 			// Get the region 
 		RandomAccessibleInterval<FloatType> current = Watershedobject.CurrentDetectionImage(parent, parent.CurrentViewIntSegoriginalimg, parent.CurrentViewSegoriginalimg , label);
 						

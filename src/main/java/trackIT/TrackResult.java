@@ -155,7 +155,7 @@ public class TrackResult extends SwingWorker<Void, Void> {
 			
 			CreateTableView(parent);
 			DisplaySelectedTrack.Select(parent);
-			
+			DisplaySelectedTrack.Mark(parent);
 
 		}
 	}

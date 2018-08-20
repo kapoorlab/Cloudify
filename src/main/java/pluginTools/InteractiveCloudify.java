@@ -145,7 +145,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	
 	public boolean showMSER = false;
 	public boolean showDOG = true;
-
+	public int rowchoice;
 		
 		
 		
@@ -187,6 +187,8 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		FloatType minval = new FloatType(0);
 		FloatType maxval = new FloatType(255);
 		Normalize.normalize(Views.iterable(Segoriginalimg), minval, maxval);
+		this.IntensityAdataset = new XYSeriesCollection();
+		this.IntensityBdataset = new XYSeriesCollection();
 		this.chartIntensityA = utility.ChartMaker.makeChart(IntensityAdataset, "Cell + Cloud Intensity evolution", "Timepoint", "IntensityA");
 		this.jFreeChartFrameIntensityA = utility.ChartMaker.display(chartIntensityA, new Dimension(500, 500));
 		this.jFreeChartFrameIntensityA.setVisible(false);
@@ -424,6 +426,8 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public final GridBagLayout layout = new GridBagLayout();
 	public final GridBagConstraints c = new GridBagConstraints();
 	public JScrollPane scrollPane;
+	int SizeX = 400;
+	int SizeY = 200;
 	public Border selectfile = new CompoundBorder(new TitledBorder("Select Track"), new EmptyBorder(c.insets));
 	public Border selectcell = new CompoundBorder(new TitledBorder("Select Cell"), new EmptyBorder(c.insets));
 	public void Card() {
@@ -479,6 +483,8 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		panelSecond.add(PanelSelectFile, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
 		
+		PanelSelectFile.setPreferredSize(new Dimension(SizeX, 2 * SizeY));
+		
 		Border methodborder = new CompoundBorder(new TitledBorder("Choose a colud finder"), new EmptyBorder(c.insets));
 		// Put time slider
 		Timeselect = CovistoTimeselectPanel.TimeselectPanel(ndims);
@@ -502,11 +508,13 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 
 		// Difference of Gaussian detection panel
 		DogPanel = CovistoDogPanel.DogPanel();
+		DogPanel.setPreferredSize(new Dimension(SizeX, SizeY));
 		panelFirst.add(DogPanel, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
 		// Mser detection panel
 		MserPanel = CovistoMserPanel.MserPanel();
+		MserPanel.setPreferredSize(new Dimension(SizeX, 2 * SizeY));
 		panelFirst.add(MserPanel, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
 
@@ -650,25 +658,5 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		Cardframe.setVisible(true);
 	}
 
-	public static void main(String[] args) {
-
-		new ImageJ();
-		JFrame frame = new JFrame("");
-		
-		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/CTrackTesting/IntegerCtrack.tif");
-		impB.show();
-		
-		ImagePlus impD = new Opener().openImage("/Users/aimachine/Documents/CTrackTesting/CloudCTrack.tif");
-		impD.show();
-		
-	
-		
-		
-		CloudifyFileChooser panel = new CloudifyFileChooser();
-
-		frame.getContentPane().add(panel, "Center");
-		frame.setSize(panel.getPreferredSize());
-
-	}
 
 }

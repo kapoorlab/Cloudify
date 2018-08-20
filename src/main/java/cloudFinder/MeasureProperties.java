@@ -67,7 +67,6 @@ public class MeasureProperties {
 			double totalIntensity = computeTotal(Views.iterable(outimg));
 			double[] centroid = computeCentroid(Views.iterable(outimg));
 			double NumPixels = computeNumpixels(Views.iterable(outimg));
-		System.out.println(meanIntensity + " " + totalIntensity + " " + centroid[0] + " " + centroid[1] + "props");
 		Watershedobject current = new Watershedobject(parent, centroid, meanIntensity, totalIntensity, NumPixels);
 		CloudObject currentCloud = new CloudObject(parent.CurrentViewIntSegoriginalimg, currentLabelObject, current.centroid, current.NumPixels, current.totalIntensity, current.meanIntensity,
 				CovistoZselectPanel.thirdDimension, CovistoTimeselectPanel.fourthDimension, SegmentationLabel);

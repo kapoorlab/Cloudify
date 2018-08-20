@@ -22,20 +22,18 @@ public class StaticMethods {
 		computeMinMax(Views.iterable(intimg), min, max);
 		Cursor<IntType> intCursor = Views.iterable(intimg).cursor();
 		// Neglect the background class label
-		int currentLabel = max.get();
-		int currentlabelmax = max.get();
+		int currentlabelmin = min.get();
 		parent.pixellist.clear();
 		
 		
 		while (intCursor.hasNext()) {
 			intCursor.fwd();
 			int i = intCursor.get().get();
-			if (i != currentLabel && i!=currentlabelmax) {
+			if (i!=currentlabelmin) {
 
 				parent.pixellist.add(i);
 
-				currentLabel = i;
-
+				
 			}
 
 		}

@@ -9,6 +9,7 @@ import javax.swing.SwingWorker;
 
 import dogGUI.CovistoDogPanel;
 import ij.gui.Roi;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.dog.DogDetection;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
@@ -53,9 +54,9 @@ public class DOGSeg  {
 		while (setiter.hasNext()) {
 
 			int label = setiter.next();
-		
+		System.out.println(label + "Integer label");
 			// Get the region 
-						Watershedobject current = Watershedobject.CurrentLabelImage(parent, parent.CurrentViewIntSegoriginalimg, parent.CurrentViewOrig, label);
+		RandomAccessibleInterval<FloatType> current = Watershedobject.CurrentDetectionImage(parent, parent.CurrentViewIntSegoriginalimg, parent.CurrentViewSegoriginalimg , label);
 						
 						
 		
@@ -65,7 +66,7 @@ public class DOGSeg  {
 			else
 				type = DogDetection.ExtremaType.MAXIMA;
 			CovistoDogPanel.sigma2 = utility.ScrollbarUtils.computeSigma2(CovistoDogPanel.sigma, parent.sensitivity);
-			final DogDetection<FloatType> newdog = new DogDetection<FloatType>(Views.extendBorder(current.source),
+			final DogDetection<FloatType> newdog = new DogDetection<FloatType>(Views.extendBorder(current),
 					parent.interval, new double[] { 1, 1 }, CovistoDogPanel.sigma, CovistoDogPanel.sigma2, type, CovistoDogPanel.threshold, true);
 			parent.peaks = newdog.getSubpixelPeaks();
 			parent.Rois = utility.FinderUtils.getcurrentRois(parent.peaks, CovistoDogPanel.sigma, CovistoDogPanel.sigma2);
@@ -92,9 +93,14 @@ public class DOGSeg  {
 				
 				
 			}
-			CloudObject currentCloud = new CloudObject(parent.CurrentViewIntSegoriginalimg, currentLabelObject, current.centroid, current.NumPixels, current.totalIntensity, current.meanIntensity,
-					CovistoZselectPanel.thirdDimension, CovistoTimeselectPanel.fourthDimension, label);
-			Allclouds.add(currentCloud);
+			
+			// Measure properties of cell excluding clouds
+			
+			
+			MeasureProperties CloudandCell = new MeasureProperties(parent, currentLabelObject, label);
+			Allclouds.addAll(CloudandCell.GetCurrentCloud());
+			
+			
 			
 		}
 

@@ -101,6 +101,8 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public float betaMin = 0;
 	public float betaMax = 1;
 	public JTable table;
+	public int row;
+	public int tablesize;
 	// Kalman parameters
 	public float maxSearchradius = 100;
 	public float maxSearchradiusS = 10;
@@ -114,7 +116,8 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public HashMap<String, CloudObject> Finalresult;
 	public MouseListener mvl;
 	public int[] Clickedpoints;
-	
+	public ArrayList<Pair<String, double[]>> resultIntensityA;
+	public ArrayList<Pair<String, double[]>>  resultIntensityB;
 	
 	public Frame jFreeChartFrameIntensityA;
 	public Frame jFreeChartFrameIntensityB;
@@ -416,12 +419,13 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public CheckboxGroup detection = new CheckboxGroup();
 	final Checkbox DOG = new Checkbox("Do DoG detection", detection, showDOG);
 	final Checkbox MSER = new Checkbox("Do MSER detection", detection, showMSER);
-
+	
 	public final Insets insets = new Insets(10, 0, 0, 0);
 	public final GridBagLayout layout = new GridBagLayout();
 	public final GridBagConstraints c = new GridBagConstraints();
 	public JScrollPane scrollPane;
 	public Border selectfile = new CompoundBorder(new TitledBorder("Select Track"), new EmptyBorder(c.insets));
+	public Border selectcell = new CompoundBorder(new TitledBorder("Select Cell"), new EmptyBorder(c.insets));
 	public void Card() {
 
 		CardLayout cl = new CardLayout();
@@ -651,17 +655,13 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		new ImageJ();
 		JFrame frame = new JFrame("");
 		
-		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/JLMCurvature/RegisteredImages/TrainingandBatch/Raw.tif");
+		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/CTrackTesting/IntegerCtrack.tif");
 		impB.show();
 		
-		ImagePlus impD = new Opener().openImage("/Users/aimachine/Documents/JLMCurvature/RegisteredImages/TrainingandBatch/C2Raw.tif");
+		ImagePlus impD = new Opener().openImage("/Users/aimachine/Documents/CTrackTesting/CloudCTrack.tif");
 		impD.show();
 		
-		ImagePlus impC = new Opener().openImage("/Users/aimachine/Documents/JLMCurvature/RegisteredImages/TrainingandBatch/Boundary.tif");
-		impC.show();
-		
-		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/JLMCurvature/RegisteredImages/TrainingandBatch/MultiCut.tif");
-		impA.show();
+	
 		
 		
 		CloudifyFileChooser panel = new CloudifyFileChooser();

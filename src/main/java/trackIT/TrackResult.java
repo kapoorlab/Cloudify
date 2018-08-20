@@ -1,20 +1,29 @@
 package trackIT;
 
+import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.SwingWorker;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import cloudFinder.CloudObject;
+import cloudFinder.RoiObject;
 import cloudTracker.TrackModel;
 import ij.ImageStack;
+import kalmanTrackListeners.DisplaySelectedTrack;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import pluginTools.InteractiveCloudify;
@@ -51,6 +60,8 @@ public class TrackResult extends SwingWorker<Void, Void> {
 		return null;
 	}
 
+	
+	
 	protected void DisplayGraph(SimpleWeightedGraph<CloudObject, DefaultWeightedEdge> simplegraph) {
 
 		int minid = Integer.MAX_VALUE;
@@ -91,7 +102,7 @@ public class TrackResult extends SwingWorker<Void, Void> {
 
 					CloudObject currentangle = Angleiter.next();
 					parent.Tracklist.add(new ValuePair<String, CloudObject>(Integer.toString(id), currentangle));
-					System.out.println(id + " " + currentangle.averageintensity);
+					
 				}
 				Collections.sort(parent.Tracklist, ThirdDimcomparison);
 
@@ -120,6 +131,7 @@ public class TrackResult extends SwingWorker<Void, Void> {
 					while (iterator.hasNext()) {
 
 						CloudObject currentangle = iterator.next();
+						System.out.println(id + " " + currentangle.averageintensity);
 						if (count == 0)
 							bestangle = currentangle;
 						if (parent.originalimg.numDimensions() <= 3) {
@@ -139,7 +151,94 @@ public class TrackResult extends SwingWorker<Void, Void> {
 				}
 
 			}
+			
+			
+			CreateTableView(parent);
+			DisplaySelectedTrack.Select(parent);
+			
 
 		}
+	}
+	
+	
+	public void CreateTableView(InteractiveCloudify parent) {
+		
+		
+
+		parent.resultIntensityA = new ArrayList<Pair<String, double[]>>();
+		parent.resultIntensityB = new ArrayList<Pair<String, double[]>>();
+		for (Pair<String, CloudObject> currentangle : parent.Tracklist) {
+			
+				parent.resultIntensityA.add(new ValuePair<String, double[]>(currentangle.getA(),
+						new double[] { currentangle.getB().thirdDimension, currentangle.getB().totalintensity }));
+				
+				
+				double cloudintensity = 0;
+				
+				for (int i= 0; i < currentangle.getB().roiobject.size(); ++i) {
+					
+					RoiObject roiob = currentangle.getB().roiobject.get(i);
+					cloudintensity+=roiob.totalintensity;
+				}
+				
+				parent.resultIntensityB.add(new ValuePair<String, double[]>(currentangle.getA(),
+						new double[] { currentangle.getB().thirdDimension, cloudintensity }));
+			
+
+
+		}
+		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Location Z/T", "Mean Intensity" };
+
+		Object[][] rowvalues = new Object[0][colnames.length];
+
+		rowvalues = new Object[parent.Finalresult.size()][colnames.length];
+
+		parent.table = new JTable(rowvalues, colnames);
+		parent.row = 0;
+		NumberFormat f = NumberFormat.getInstance();
+		for (Map.Entry<String, CloudObject> entry : parent.Finalresult.entrySet()) {
+
+			CloudObject currentangle = entry.getValue();
+			parent.table.getModel().setValueAt(entry.getKey(), parent.row, 0);
+			parent.table.getModel().setValueAt(f.format(currentangle.geometriccenter[0]), parent.row, 1);
+			parent.table.getModel().setValueAt(f.format(currentangle.geometriccenter[1]), parent.row, 2);
+			parent.table.getModel().setValueAt(f.format(currentangle.thirdDimension), parent.row, 3);
+			parent.table.getModel().setValueAt(f.format(currentangle.averageintensity), parent.row, 4);
+
+			parent.row++;
+
+			parent.tablesize = parent.row;
+		}
+
+		makeGUI(parent);
+		
+	}
+	
+	
+	public static void makeGUI(final InteractiveCloudify parent) {
+
+		parent.PanelSelectFile.removeAll();
+
+		parent.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+		parent.scrollPane = new JScrollPane(parent.table);
+
+		parent.scrollPane.getViewport().add(parent.table);
+		parent.scrollPane.setAutoscrolls(true);
+		parent.PanelSelectFile.add(parent.scrollPane, BorderLayout.CENTER);
+
+		parent.PanelSelectFile.setBorder(parent.selectcell);
+
+	
+		
+		parent.PanelSelectFile.repaint();
+		parent.PanelSelectFile.validate();
+		parent.table.repaint();
+		parent.table.validate();
+		parent.panelSecond.repaint();
+		parent.panelSecond.validate();
+		parent.Cardframe.repaint();
+		parent.Cardframe.validate();
+
 	}
 }

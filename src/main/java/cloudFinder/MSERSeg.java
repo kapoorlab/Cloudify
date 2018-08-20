@@ -9,8 +9,10 @@ import javax.swing.SwingWorker;
 
 import ij.gui.Roi;
 import mserGUI.CovistoMserPanel;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.numeric.real.FloatType;
 import pluginTools.InteractiveCloudify;
 import timeGUI.CovistoTimeselectPanel;
 import zGUI.CovistoZselectPanel;
@@ -51,16 +53,16 @@ public class MSERSeg {
 
 			int label = setiter.next();
 			// Get the region 
-			Watershedobject current = Watershedobject.CurrentLabelImage(parent, parent.CurrentViewIntSegoriginalimg,parent.CurrentViewOrig, label);
+			RandomAccessibleInterval<FloatType> current = Watershedobject.CurrentDetectionImage(parent, parent.CurrentViewIntSegoriginalimg, parent.CurrentViewSegoriginalimg , label);
 			
 			if (CovistoMserPanel.darktobright)
 
-				parent.newtree = MserTree.buildMserTree(current.source, CovistoMserPanel.delta, CovistoMserPanel.minSize, CovistoMserPanel.maxSize,
+				parent.newtree = MserTree.buildMserTree(current, CovistoMserPanel.delta, CovistoMserPanel.minSize, CovistoMserPanel.maxSize,
 						CovistoMserPanel.Unstability_Score, CovistoMserPanel.minDiversity, true);
 
 			else
 
-				parent.newtree = MserTree.buildMserTree(current.source, CovistoMserPanel.delta, CovistoMserPanel.minSize, CovistoMserPanel.maxSize,
+				parent.newtree = MserTree.buildMserTree(current, CovistoMserPanel.delta, CovistoMserPanel.minSize, CovistoMserPanel.maxSize,
 						CovistoMserPanel.Unstability_Score, CovistoMserPanel.minDiversity, false);
 			
 
@@ -87,10 +89,8 @@ public class MSERSeg {
 				
 			}
 			
-			
-			CloudObject currentCloud = new CloudObject(parent.CurrentViewIntSegoriginalimg, currentLabelObject, current.centroid, current.NumPixels, current.totalIntensity, current.meanIntensity,
-					CovistoZselectPanel.thirdDimension, CovistoTimeselectPanel.fourthDimension, label);
-			Allclouds.add(currentCloud);
+			MeasureProperties CloudandCell = new MeasureProperties(parent, currentLabelObject, label);
+			Allclouds.addAll(CloudandCell.GetCurrentCloud());
 			
 		}
 		

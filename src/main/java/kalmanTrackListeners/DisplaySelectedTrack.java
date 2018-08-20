@@ -66,6 +66,13 @@ public class DisplaySelectedTrack {
 						parent.jFreeChartFrameIntensityA = utility.ChartMaker.display(parent.chartIntensityA, new Dimension(500, 500));
 					if (!parent.jFreeChartFrameIntensityB.isVisible())
 						parent.jFreeChartFrameIntensityB = utility.ChartMaker.display(parent.chartIntensityB, new Dimension(500, 500));
+					
+					if (!parent.jFreeChartFrameIntensityASec.isVisible())
+						parent.jFreeChartFrameIntensityASec = utility.ChartMaker.display(parent.chartIntensityASec, new Dimension(500, 500));
+					if (!parent.jFreeChartFrameIntensityBSec.isVisible())
+						parent.jFreeChartFrameIntensityBSec = utility.ChartMaker.display(parent.chartIntensityBSec, new Dimension(500, 500));
+					
+					
 				}
 				
 			}
@@ -177,6 +184,29 @@ public class DisplaySelectedTrack {
    		// Make something happen
    		parent.row = trackindex;
    		String ID = (String) parent.table.getValueAt(trackindex, 0);
+   		ArrayList<Pair<String, double[]>> currentresultIntASec = new ArrayList<Pair<String, double[]>>();
+
+   		for (Pair<String, double[]> currentInt : parent.resultIntensityASec) {
+
+   			if (ID.equals(currentInt.getA())) {
+
+   				currentresultIntASec.add(currentInt);
+
+   			}
+
+   		}
+
+   		ArrayList<Pair<String, double[]>> currentresultIntBSec = new ArrayList<Pair<String, double[]>>();
+   		for (Pair<String, double[]> currentIntB : parent.resultIntensityBSec) {
+
+   			if (ID.equals(currentIntB.getA())) {
+
+   				currentresultIntBSec.add(currentIntB);
+
+   			}
+
+   		}
+   		
    		ArrayList<Pair<String, double[]>> currentresultIntA = new ArrayList<Pair<String, double[]>>();
 
    		for (Pair<String, double[]> currentInt : parent.resultIntensityA) {
@@ -209,7 +239,7 @@ public class DisplaySelectedTrack {
    		parent.IntensityAdataset.removeAllSeries();
    		parent.IntensityAdataset.addSeries(ChartMaker.drawCurvePoints(currentresultIntA));
 
-   		parent.chartIntensityA = utility.ChartMaker.makeChart(parent.IntensityAdataset, "Cell - cloud intensity evolution", "Time", "Intensity A");
+   		parent.chartIntensityA = utility.ChartMaker.makeChart(parent.IntensityAdataset, "Cell - cloud intensity evolution (Ch1)", "Time", "Intensity");
    		
    	
 
@@ -221,12 +251,40 @@ public class DisplaySelectedTrack {
    	   		parent.IntensityBdataset.removeAllSeries();
    	   		parent.IntensityBdataset.addSeries(ChartMaker.drawCurvePoints(currentresultIntB));
 
-   	   		parent.chartIntensityB = utility.ChartMaker.makeChart(parent.IntensityBdataset, "Only cloud intensity evolution", "Time", "Intensity B");
+   	   		parent.chartIntensityB = utility.ChartMaker.makeChart(parent.IntensityBdataset, "Only cloud intensity evolution (Ch1)", "Time", "Intensity");
    	   		
    	   	
 
    	   		parent.jFreeChartFrameIntensityB.dispose();
    	   		parent.jFreeChartFrameIntensityB.repaint();
+   	   		
+   	   		
+   	 	if(parent.IntensityAdatasetSec!=null)
+   	   		parent.IntensityAdatasetSec.removeAllSeries();
+   	   		parent.IntensityAdatasetSec.addSeries(ChartMaker.drawCurvePoints(currentresultIntA));
+
+   	   		parent.chartIntensityASec = utility.ChartMaker.makeChart(parent.IntensityAdatasetSec, "Cell - cloud intensity evolution (Ch2)", "Time", "Intensity");
+   	   		
+   	   	
+
+   	   		parent.jFreeChartFrameIntensityASec.dispose();
+   	   		parent.jFreeChartFrameIntensityASec.repaint();
+   	   		
+   	   		
+   	   		if(parent.IntensityBdatasetSec!=null)
+   	   	   		parent.IntensityBdatasetSec.removeAllSeries();
+   	   	   		parent.IntensityBdatasetSec.addSeries(ChartMaker.drawCurvePoints(currentresultIntBSec));
+
+   	   	   		parent.chartIntensityBSec = utility.ChartMaker.makeChart(parent.IntensityBdatasetSec, "Only cloud intensity evolution (Ch2)", "Time", "Intensity");
+   	   	   		
+   	   	   	
+
+   	   	   		parent.jFreeChartFrameIntensityBSec.dispose();
+   	   	   		parent.jFreeChartFrameIntensityBSec.repaint();
+   	   	   		
+   	   		
+   	   		
+   	   		
 
    	}
 

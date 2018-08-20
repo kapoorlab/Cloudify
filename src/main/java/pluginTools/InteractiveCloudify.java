@@ -11,8 +11,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.File;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +24,7 @@ import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -71,6 +74,7 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.view.Views;
+import saveTracks.CovistoSavePanel;
 import timeGUI.CovistoTimeselectPanel;
 import watershedGUI.CovistoWatershedPanel;
 import zGUI.CovistoZselectPanel;
@@ -80,6 +84,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	/**
 	 * 
 	 */
+	public String addToName = "CTrack";
 	private static final long serialVersionUID = 1L;
 	public static int standardSensitivity = 4;
 	public int sensitivity = standardSensitivity;
@@ -93,6 +98,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public NumberFormat nf;
 	public final int scrollbarSize = 1000;
 	public HashMap<String, ArrayList<CloudObject>> AllClouds;
+	public HashMap<String, ArrayList<CloudObject>> AllCloudsChannelTwo;
 	public CostFunction<CloudObject, CloudObject> UserchosenCostFunction;
 	public HashMap<String, Integer> AccountedZ;
 	// Cost function parameters
@@ -103,6 +109,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public JTable table;
 	public int row;
 	public int tablesize;
+	public String selectedID;
 	// Kalman parameters
 	public float maxSearchradius = 100;
 	public float maxSearchradiusS = 10;
@@ -118,15 +125,31 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public int[] Clickedpoints;
 	public ArrayList<Pair<String, double[]>> resultIntensityA;
 	public ArrayList<Pair<String, double[]>>  resultIntensityB;
-	
+	public ArrayList<Pair<String, double[]>> resultIntensityASec;
+	public ArrayList<Pair<String, double[]>>  resultIntensityBSec;
+	public File saveFile;
 	public Frame jFreeChartFrameIntensityA;
 	public Frame jFreeChartFrameIntensityB;
 	
 	public JFreeChart chartIntensityA;
 	public JFreeChart chartIntensityB;
 	
+	
+	
 	public XYSeriesCollection IntensityAdataset;
 	public XYSeriesCollection IntensityBdataset;
+	
+	
+	public Frame jFreeChartFrameIntensityASec;
+	public Frame jFreeChartFrameIntensityBSec;
+	
+	public JFreeChart chartIntensityASec;
+	public JFreeChart chartIntensityBSec;
+	
+	
+	
+	public XYSeriesCollection IntensityAdatasetSec;
+	public XYSeriesCollection IntensityBdatasetSec;
 	
 	public RandomAccessibleInterval<FloatType> originalimg;
 	public RandomAccessibleInterval<FloatType> originalSecimg;
@@ -142,7 +165,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public RandomAccessibleInterval<FloatType> CurrentViewSegoriginalimg;
 	public RandomAccessibleInterval<IntType> CurrentViewIntSegoriginalimg;
 	public ArrayList<Pair<String, CloudObject>> Tracklist;
-	
+	public ArrayList<Pair<String, CloudObject>> TracklistChannelTwo;
 	public boolean showMSER = false;
 	public boolean showDOG = true;
 	public int rowchoice;
@@ -189,19 +212,37 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		Normalize.normalize(Views.iterable(Segoriginalimg), minval, maxval);
 		this.IntensityAdataset = new XYSeriesCollection();
 		this.IntensityBdataset = new XYSeriesCollection();
-		this.chartIntensityA = utility.ChartMaker.makeChart(IntensityAdataset, "Cell + Cloud Intensity evolution", "Timepoint", "IntensityA");
+		
+		this.IntensityAdatasetSec = new XYSeriesCollection();
+		this.IntensityBdatasetSec = new XYSeriesCollection();
+		
+		this.chartIntensityA = utility.ChartMaker.makeChart(IntensityAdataset, "Cell - Cloud Intensity evolution", "Timepoint", "IntensityA");
+		
+		
 		this.jFreeChartFrameIntensityA = utility.ChartMaker.display(chartIntensityA, new Dimension(500, 500));
 		this.jFreeChartFrameIntensityA.setVisible(false);
 		
-		this.chartIntensityB = utility.ChartMaker.makeChart(IntensityBdataset, "Cell - Cloud Intensity evolution", "Timepoint", "IntensityB");
+		this.chartIntensityB = utility.ChartMaker.makeChart(IntensityBdataset, "Cloud Intensity evolution", "Timepoint", "IntensityB");
 		this.jFreeChartFrameIntensityB = utility.ChartMaker.display(chartIntensityB, new Dimension(500, 500));
 		this.jFreeChartFrameIntensityB.setVisible(false);
+		
+	    this.chartIntensityASec = utility.ChartMaker.makeChart(IntensityAdatasetSec, "Cell - Cloud Intensity evolution", "Timepoint", "IntensityA");
+		
+		
+		this.jFreeChartFrameIntensityASec = utility.ChartMaker.display(chartIntensityASec, new Dimension(500, 500));
+		this.jFreeChartFrameIntensityASec.setVisible(false);
+		
+		this.chartIntensityBSec = utility.ChartMaker.makeChart(IntensityBdatasetSec, "Cloud Intensity evolution", "Timepoint", "IntensityB");
+		this.jFreeChartFrameIntensityBSec = utility.ChartMaker.display(chartIntensityBSec, new Dimension(500, 500));
+		this.jFreeChartFrameIntensityBSec.setVisible(false);
 	}
+	
 
 	
 
 	@Override
 	public void run(String arg0) {
+		saveFile = new java.io.File(".");
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(3);
 		jpb = new JProgressBar();
@@ -209,10 +250,12 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		interval = new FinalInterval(originalimg.dimension(0), originalimg.dimension(1));
 		peaks = new ArrayList<RefinedPeak<Point>>();
 		AllClouds = new HashMap<String, ArrayList<CloudObject>>();
+		AllCloudsChannelTwo = new HashMap<String, ArrayList<CloudObject>>();
 		pixellist = new HashSet<Integer>();
 		AccountedZ = new HashMap<String, Integer>();
 		Finalresult = new HashMap<String, CloudObject>();
 		Tracklist = new ArrayList<Pair<String, CloudObject>>();
+		TracklistChannelTwo = new ArrayList<Pair<String, CloudObject>>();
 		if (ndims < 3) {
 
 			CovistoZselectPanel.thirdDimensionSize = 0;
@@ -406,9 +449,10 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 
 	public JFrame Cardframe = new JFrame("Cloud Tracker");
 	public JPanel KalmanPanel = new JPanel();
-	
+	public JFileChooser chooserA = new JFileChooser();
 	public JPanel panelFirst = new JPanel();
 	public JPanel panelSecond = new JPanel();
+	public JPanel panelThird = new JPanel();
 	
 	public JPanel PanelSelectFile = new JPanel();
 	public JPanel panelCont = new JPanel();
@@ -417,7 +461,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public JPanel Timeselect = new JPanel();
 	public JPanel MserPanel = new JPanel();
 	public JPanel DogPanel = new JPanel();
-
+	public JPanel Original = new JPanel();
 	public CheckboxGroup detection = new CheckboxGroup();
 	final Checkbox DOG = new Checkbox("Do DoG detection", detection, showDOG);
 	final Checkbox MSER = new Checkbox("Do MSER detection", detection, showMSER);
@@ -439,8 +483,10 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 
 		panelCont.add(panelFirst, "1");
 		panelCont.add(panelSecond, "2");
+		panelCont.add(panelThird, "3");
 		panelFirst.setLayout(layout);
 		panelSecond.setLayout(layout);
+		panelThird.setLayout(layout);
 		c.anchor = GridBagConstraints.BOTH;
 		c.ipadx = 35;
 
@@ -522,10 +568,13 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		
 		
 		JPanel controlprev = new JPanel();
+		JPanel controlprevthird = new JPanel();
 		JPanel controlnext = new JPanel();
-
+		JPanel controlnextsec = new JPanel();
 		controlprev.setLayout(layout);
+		controlprevthird.setLayout(layout);
 		controlnext.setLayout(layout);
+		controlnextsec.setLayout(layout);
 		controlprev.add(new JButton(new AbstractAction("\u22b2Prev") {
 
 			@Override
@@ -534,7 +583,14 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 				cl.previous(panelCont);
 			}
 		}));
+		controlprevthird.add(new JButton(new AbstractAction("\u22b2Prev") {
 
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CardLayout cl = (CardLayout) panelCont.getLayout();
+				cl.previous(panelCont);
+			}
+		}));
 		controlnext.add(new JButton(new AbstractAction("Next\u22b3") {
 
 			@Override
@@ -543,6 +599,16 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 				cl.next(panelCont);
 			}
 		}));
+		controlnextsec.add(new JButton(new AbstractAction("Next\u22b3") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CardLayout cl = (CardLayout) panelCont.getLayout();
+				cl.next(panelCont);
+			}
+		}));
+		
+		
 		panelFirst.add(controlnext, new GridBagConstraints(3, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		panelSecond.add(KalmanPanel, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
@@ -552,6 +618,8 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		
 		
 		panelSecond.add(controlprev, new GridBagConstraints(0, 10, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+		panelSecond.add(controlnextsec, new GridBagConstraints(0, 15, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		CovistoKalmanPanel.Timetrack.addActionListener(new LinkobjectListener(this));
 		CovistoKalmanPanel.lostframe.addTextListener(new PRELostFrameListener(this));
@@ -572,10 +640,19 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 				CovistoKalmanPanel.scrollbarSize, CovistoKalmanPanel.initialSearchS));
 		
 		
+	    Original = CovistoSavePanel.SavePanel();
+		CovistoSavePanel.inputField.addTextListener(new CtrackFilenameListener(this));
+		CovistoSavePanel.inputtrackField.addTextListener(new CTrackidListener(this));
+		CovistoSavePanel.Savebutton.addActionListener(new SaveListener(this));
+		CovistoSavePanel.SaveAllbutton.addActionListener(new SaveAllListener(this));
+		CovistoSavePanel.ChooseDirectory.addActionListener(new SaverDirectory(this) );
+		
+		panelThird.add(Original, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		
 		
-		
-		
+		panelThird.add(controlprevthird, new GridBagConstraints(0, 10, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		
 		CovistoDogPanel.findminima.addItemListener(new FindMinimaListener(this));
 		CovistoDogPanel.findmaxima.addItemListener(new FindMaximaListener(this));
@@ -657,6 +734,10 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		Cardframe.pack();
 		Cardframe.setVisible(true);
 	}
+
+
+
+
 
 
 }

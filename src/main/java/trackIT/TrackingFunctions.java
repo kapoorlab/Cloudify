@@ -38,6 +38,8 @@ public class TrackingFunctions {
 		
 
 		}
+		
+		
 
 		KFsearch Tsearch = new KFsearch(colllist, parent.UserchosenCostFunction,  parent.maxSearchradius ,
 				 parent.maxSearchradius, 
@@ -50,6 +52,32 @@ public class TrackingFunctions {
 		
 	}
 	
-	
+	public SimpleWeightedGraph<CloudObject, DefaultWeightedEdge> TrackfunctionChannelTwo() {
+		
+		parent.UserchosenCostFunction = new CloudTrackCostFunction(1, 0);
+		
+
+		ArrayList<ArrayList<CloudObject>> colllist = new ArrayList<ArrayList<CloudObject>>();
+		parent.AllCloudsChannelTwo = hashMapSorter.SortTimeorZ.sortByIntegerInter(parent.AllCloudsChannelTwo);
+		for (Map.Entry<String, ArrayList<CloudObject>> entry : parent.AllCloudsChannelTwo.entrySet()) {
+
+			ArrayList<CloudObject> bloblist = entry.getValue();
+			colllist.add(bloblist);
+		
+
+		}
+		
+		
+
+		KFsearch Tsearch = new KFsearch(colllist, parent.UserchosenCostFunction,  parent.maxSearchradius ,
+				 parent.maxSearchradius, 
+				 parent.missedframes, parent.AccountedZ, parent.jpb);
+		Tsearch.process();
+		SimpleWeightedGraph<CloudObject, DefaultWeightedEdge> simplegraph = Tsearch.getResult();
+
+		return simplegraph;
+		
+		
+	}
 	
 }

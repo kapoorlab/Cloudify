@@ -49,6 +49,7 @@ public class MSERSeg {
 		 parent.overlay.clear();
 		 
 		 ArrayList<CloudObject> Allclouds = new ArrayList<CloudObject>();
+		 ArrayList<CloudObject> SecAllclouds = new ArrayList<CloudObject>();
 		while (setiter.hasNext()) {
 
 			int label = setiter.next();
@@ -69,22 +70,31 @@ public class MSERSeg {
 			parent.Rois = utility.FinderUtils.getcurrentRois(parent.newtree);
 			
 			ArrayList<RoiObject> currentLabelObject = new ArrayList<RoiObject>();
+			ArrayList<RoiObject> SeccurrentLabelObject = new ArrayList<RoiObject>();
+			
 			for(Roi roi : parent.Rois) {
 				
 				double[] centroid = roi.getContourCentroid();
 				
 				double Intensity = StaticMethods.getIntensity(parent.CurrentViewOrig, roi);
 				
+				double SecIntensity = StaticMethods.getIntensity(parent.CurrentViewSecOrig, roi);
+				
 				double numPixels = StaticMethods.getNumberofPixels(parent.CurrentViewOrig, roi);
 				
 				double meanIntensity = Intensity / numPixels;
+				
+				double SecmeanIntensity = SecIntensity / numPixels;
 				
 				RoiObject currentRoiobject = new RoiObject(roi, centroid, meanIntensity, Intensity, numPixels);
 				
 				currentLabelObject.add(currentRoiobject);
 				
-
-				roi.setStrokeColor(parent.colorDrawMser);
+				 RoiObject SeccurrentRoiobject = new RoiObject(roi, centroid, SecmeanIntensity, SecIntensity, numPixels);
+	                
+	             SeccurrentLabelObject.add(SeccurrentRoiobject);
+				
+	             roi.setStrokeColor(parent.colorDrawMser);
 				parent.overlay.add(roi);
 				
 			}
@@ -92,11 +102,14 @@ public class MSERSeg {
 			MeasureProperties CloudandCell = new MeasureProperties(parent, currentLabelObject, label);
 			Allclouds.addAll(CloudandCell.GetCurrentCloud());
 			
+			MeasureProperties SecCloudandCell = new MeasureProperties(parent, SeccurrentLabelObject, label);
+			SecAllclouds.addAll(SecCloudandCell.GetCurrentCloud());
+			
 		}
 		
 		
 		  parent.AllClouds.put(uniqueID, Allclouds);
-		
+		  parent.AllCloudsChannelTwo.put(uniqueID, SecAllclouds);
 
 		
 
@@ -106,7 +119,6 @@ public class MSERSeg {
 			
 			
 			
-				utility.CovsitoProgressBar.CovistoSetProgressBar(jpb, "Done");
 			
 	}
 

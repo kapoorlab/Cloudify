@@ -14,10 +14,13 @@ public class InteractiveCloudTracker {
 		new ImageJ();
 		JFrame frame = new JFrame("");
 		
-		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/CTrackTesting/IntegerCtrack.tif");
+		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/JuliaData/RealTestCTrack/OriginalImage.tif");
+		impA.show();
+		
+		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/JuliaData/RealTestCTrack/IntegerCell.tif");
 		impB.show();
 		
-		ImagePlus impD = new Opener().openImage("/Users/aimachine/Documents/CTrackTesting/CloudCTrack.tif");
+		ImagePlus impD = new Opener().openImage("/Users/aimachine/Documents/JuliaData/RealTestCTrack/Clouds.tif");
 		impD.show();
 		
 		

@@ -22,25 +22,25 @@ public class MeasureProperties {
 	final InteractiveCloudify parent;
 	final int SegmentationLabel;
 	final ArrayList<RoiObject> currentLabelObject;
-	
-	public MeasureProperties( final InteractiveCloudify parent, final ArrayList<RoiObject> currentLabelObject, final int SegmentationLabel) {
+	final RandomAccessibleInterval<FloatType> OrigImageA;
+	final RandomAccessibleInterval<FloatType> OrigImageB;
+	public MeasureProperties( final InteractiveCloudify parent, final RandomAccessibleInterval<FloatType> OrigImageA, final RandomAccessibleInterval<FloatType> OrigImageB, final ArrayList<RoiObject> currentLabelObject, final int SegmentationLabel) {
 		
 		
 		this.parent = parent;
 		this.currentLabelObject = currentLabelObject;
 		this.SegmentationLabel = SegmentationLabel;
-		
-		
+		this.OrigImageA = OrigImageA;
+		this.OrigImageB = OrigImageB;
 	}
 	
 	
 	public ArrayList<CloudObject> GetCurrentCloud() {
 		
 		
-		RandomAccessibleInterval<FloatType> MissImage = Watershedobject.CurrentOrigLabelImage(parent, parent.CurrentViewIntSegoriginalimg, parent.CurrentViewOrig, SegmentationLabel);
-		RandomAccessibleInterval<FloatType> outimg = new ArrayImgFactory<FloatType>().create(MissImage, new FloatType());
+		RandomAccessibleInterval<FloatType> outimg = new ArrayImgFactory<FloatType>().create(OrigImageA, new FloatType());
 		ArrayList<CloudObject> Allclouds = new ArrayList<CloudObject>();
-		Cursor<FloatType> iter = Views.iterable(MissImage).localizingCursor();
+		Cursor<FloatType> iter = Views.iterable(OrigImageA).localizingCursor();
 		
 		RandomAccess<FloatType> ranac = outimg.randomAccess();
 			
@@ -63,18 +63,48 @@ public class MeasureProperties {
 			
 			}
 			
+			
+			RandomAccessibleInterval<FloatType> outimgB = new ArrayImgFactory<FloatType>().create(OrigImageB, new FloatType());
+			Cursor<FloatType> iterB = Views.iterable(OrigImageB).localizingCursor();
+			
+			RandomAccess<FloatType> ranacB = outimgB.randomAccess();
+				
+				while(iterB.hasNext()) {
+				
+					iterB.fwd();
+					
+					ranacB.setPosition(iterB);
+					ranacB.get().set(iterB.get());
+					
+					for(Roi currentroi : parent.Rois) {
+						
+					int x = ranacB.getIntPosition(0);
+					int y = ranacB.getIntPosition(1);
+					
+					if(currentroi.contains(x, y))
+						ranacB.get().setZero();
+					
+				}
+				
+				}
+			
+			
 			double meanIntensity = computeAverage(Views.iterable(outimg));
 			double totalIntensity = computeTotal(Views.iterable(outimg));
 			double[] centroid = computeCentroid(Views.iterable(outimg));
 			double NumPixels = computeNumpixels(Views.iterable(outimg));
-		Watershedobject current = new Watershedobject(parent, centroid, meanIntensity, totalIntensity, NumPixels);
+			double meanIntensityB = computeAverage(Views.iterable(outimgB));
+			double totalIntensityB = computeTotal(Views.iterable(outimgB));
+			
+		Watershedobject current = new Watershedobject(parent, centroid, meanIntensity, totalIntensity, meanIntensityB, totalIntensityB, NumPixels);
 		CloudObject currentCloud = new CloudObject(parent.CurrentViewIntSegoriginalimg, currentLabelObject, current.centroid, current.NumPixels, current.totalIntensity, current.meanIntensity,
+				current.totalIntensityB, current.meanIntensityB,
 				CovistoZselectPanel.thirdDimension, CovistoTimeselectPanel.fourthDimension, SegmentationLabel);
 		Allclouds.add(currentCloud);
 		
 		return Allclouds;
 	}
-	
+
 	/**
 	 * Compute the average intensity for an {@link Iterable}.
 	 *

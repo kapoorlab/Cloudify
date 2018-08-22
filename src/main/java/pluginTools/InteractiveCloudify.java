@@ -99,7 +99,6 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public NumberFormat nf;
 	public final int scrollbarSize = 1000;
 	public HashMap<String, ArrayList<CloudObject>> AllClouds;
-	public HashMap<String, ArrayList<CloudObject>> AllCloudsChannelTwo;
 	public CostFunction<CloudObject, CloudObject> UserchosenCostFunction;
 	public HashMap<String, Integer> AccountedZ;
 	// Cost function parameters
@@ -251,7 +250,6 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		interval = new FinalInterval(originalimg.dimension(0), originalimg.dimension(1));
 		peaks = new ArrayList<RefinedPeak<Point>>();
 		AllClouds = new HashMap<String, ArrayList<CloudObject>>();
-		AllCloudsChannelTwo = new HashMap<String, ArrayList<CloudObject>>();
 		pixellist = new HashSet<Integer>();
 		AccountedZ = new HashMap<String, Integer>();
 		Finalresult = new HashMap<String, CloudObject>();

@@ -13,6 +13,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.Pair;
 import pluginTools.InteractiveCloudify;
 import timeGUI.CovistoTimeselectPanel;
 import zGUI.CovistoZselectPanel;
@@ -50,6 +51,7 @@ public class MSERSeg {
 		 
 		 ArrayList<CloudObject> Allclouds = new ArrayList<CloudObject>();
 		 ArrayList<CloudObject> SecAllclouds = new ArrayList<CloudObject>();
+		
 		while (setiter.hasNext()) {
 
 			int label = setiter.next();
@@ -70,7 +72,6 @@ public class MSERSeg {
 			parent.Rois = utility.FinderUtils.getcurrentRois(parent.newtree);
 			
 			ArrayList<RoiObject> currentLabelObject = new ArrayList<RoiObject>();
-			ArrayList<RoiObject> SeccurrentLabelObject = new ArrayList<RoiObject>();
 			
 			for(Roi roi : parent.Rois) {
 				
@@ -85,31 +86,26 @@ public class MSERSeg {
 				double meanIntensity = Intensity / numPixels;
 				
 				double SecmeanIntensity = SecIntensity / numPixels;
-				
-				RoiObject currentRoiobject = new RoiObject(roi, centroid, meanIntensity, Intensity, numPixels);
+				RoiObject currentRoiobject = new RoiObject(roi, centroid, meanIntensity, Intensity, SecmeanIntensity, SecIntensity, numPixels);
 				
 				currentLabelObject.add(currentRoiobject);
-				
-				 RoiObject SeccurrentRoiobject = new RoiObject(roi, centroid, SecmeanIntensity, SecIntensity, numPixels);
-	                
-	             SeccurrentLabelObject.add(SeccurrentRoiobject);
+		
 				
 	            roi.setStrokeColor(parent.colorDrawMser);
 				parent.overlay.add(roi);
 				
 			}
-			
-			MeasureProperties CloudandCell = new MeasureProperties(parent, currentLabelObject, label);
+			Pair<RandomAccessibleInterval<FloatType>,RandomAccessibleInterval<FloatType>>  BothMissImage = Watershedobject.CurrentOrigLabelImage(parent, parent.CurrentViewIntSegoriginalimg, 
+					parent.CurrentViewOrig, parent.CurrentViewSecOrig, label);
+			MeasureProperties CloudandCell = new MeasureProperties(parent, BothMissImage.getA(), BothMissImage.getB(), currentLabelObject, label);
 			Allclouds.addAll(CloudandCell.GetCurrentCloud());
 			
-			MeasureProperties SecCloudandCell = new MeasureProperties(parent, SeccurrentLabelObject, label);
-			SecAllclouds.addAll(SecCloudandCell.GetCurrentCloud());
+			
 			
 		}
 		
 		
 		  parent.AllClouds.put(uniqueID, Allclouds);
-		  parent.AllCloudsChannelTwo.put(uniqueID, SecAllclouds);
 
 		
 

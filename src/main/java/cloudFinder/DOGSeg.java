@@ -11,7 +11,9 @@ import dogGUI.CovistoDogPanel;
 import ij.gui.Roi;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.dog.DogDetection;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.Pair;
 import net.imglib2.view.Views;
 import pluginTools.InteractiveCloudify;
 import timeGUI.CovistoTimeselectPanel;
@@ -88,14 +90,12 @@ public class DOGSeg  {
 				double meanIntensity = Intensity / numPixels;
 				
 				double SecmeanIntensity = SecIntensity / numPixels;
+		
 				
-				RoiObject currentRoiobject = new RoiObject(roi, centroid, meanIntensity, Intensity, numPixels);
+				RoiObject currentRoiobject = new RoiObject(roi, centroid, meanIntensity, Intensity, SecmeanIntensity, SecIntensity, numPixels);
 				
 				currentLabelObject.add(currentRoiobject);
-				
-                RoiObject SeccurrentRoiobject = new RoiObject(roi, centroid, SecmeanIntensity, SecIntensity, numPixels);
-                
-                SeccurrentLabelObject.add(SeccurrentRoiobject);
+          
 				
 
 				roi.setStrokeColor(parent.colorDrawMser);
@@ -107,17 +107,15 @@ public class DOGSeg  {
 			// Measure properties of cell excluding clouds
 			
 			
-			MeasureProperties CloudandCell = new MeasureProperties(parent, currentLabelObject, label);
+			Pair<RandomAccessibleInterval<FloatType>,RandomAccessibleInterval<FloatType>>  BothMissImage = Watershedobject.CurrentOrigLabelImage(parent, parent.CurrentViewIntSegoriginalimg, 
+					parent.CurrentViewOrig, parent.CurrentViewSecOrig, label);
+			MeasureProperties CloudandCell = new MeasureProperties(parent, BothMissImage.getA(), BothMissImage.getB(), currentLabelObject, label);
 			Allclouds.addAll(CloudandCell.GetCurrentCloud());
-			
-			MeasureProperties SecCloudandCell = new MeasureProperties(parent, SeccurrentLabelObject, label);
-			SecAllclouds.addAll(SecCloudandCell.GetCurrentCloud());
 			
 		}
 
 		  parent.AllClouds.put(uniqueID, Allclouds);
 		
-		  parent.AllCloudsChannelTwo.put(uniqueID, SecAllclouds);
 		
 
 		

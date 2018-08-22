@@ -24,6 +24,8 @@ public class CloudObject extends AbstractEuclideanSpace implements RealLocalizab
 	public double area;
 	public double totalintensity;
 	public double averageintensity;
+	public double totalintensityB;
+	public double averageintensityB;
 	public int thirdDimension;
 	public int fourthDimension;
 	public ArrayList<RoiObject> roiobject;
@@ -48,7 +50,7 @@ public class CloudObject extends AbstractEuclideanSpace implements RealLocalizab
 	 */
 	
 	public CloudObject(final RandomAccessibleInterval<IntType> Intimg, final ArrayList<RoiObject> roiobject, final double[] geomtericcenter, 
-			final double area, final double totalintensity, final double averageintensity, final int thirdDimension, final int fourthDimension, final int label) {
+			final double area, final double totalintensity, final double averageintensity,  final double totalintensityB, final double averageintensityB, final int thirdDimension, final int fourthDimension, final int label) {
 		super(3);
 		this.Intimg = Intimg;
         this.roiobject = roiobject;
@@ -56,6 +58,8 @@ public class CloudObject extends AbstractEuclideanSpace implements RealLocalizab
         this.area = area;
         this.totalintensity = totalintensity;
         this.averageintensity = averageintensity;
+        this.totalintensityB = totalintensityB;
+        this.averageintensityB = averageintensityB;
         this.thirdDimension = thirdDimension;
         this.fourthDimension = fourthDimension;
         this.label = label;

@@ -49,16 +49,12 @@ public class TrackResult extends SwingWorker<Void, Void> {
 
 		parent.table.removeAll();
 		parent.Tracklist.clear();
+		parent.TracklistChannelTwo.clear();
 
 		System.out.println("Making tracks");
-		TrackingFunctions track = new TrackingFunctions(parent);
-		
-		SimpleWeightedGraph<CloudObject, DefaultWeightedEdge> simplegraphChannelTwo = track.TrackfunctionChannelTwo();
 
-		// Display Graph results, make table etc
-		DisplayGraphChannelTwo(simplegraphChannelTwo);
 		
-		
+		TrackingFunctions track = new TrackingFunctions(parent);
 		SimpleWeightedGraph<CloudObject, DefaultWeightedEdge> simplegraph = track.Trackfunction();
 
 		// Display Graph results, make table etc
@@ -72,55 +68,6 @@ public class TrackResult extends SwingWorker<Void, Void> {
 		return null;
 	}
 
-	protected void DisplayGraphChannelTwo(SimpleWeightedGraph<CloudObject, DefaultWeightedEdge> simplegraph) {
-
-		int minid = Integer.MAX_VALUE;
-		int maxid = Integer.MIN_VALUE;
-		TrackModel model = new TrackModel(simplegraph);
-		for (final Integer id : model.trackIDs(true)) {
-
-			if (id > maxid)
-				maxid = id;
-
-			if (id < minid)
-				minid = id;
-
-		}
-		if (minid != Integer.MAX_VALUE) {
-
-			for (final Integer id : model.trackIDs(true)) {
-
-				Comparator<Pair<String, CloudObject>> ThirdDimcomparison = new Comparator<Pair<String, CloudObject>>() {
-
-					@Override
-					public int compare(final Pair<String, CloudObject> A, final Pair<String, CloudObject> B) {
-
-						return A.getB().thirdDimension - B.getB().thirdDimension;
-
-					}
-
-				};
-
-			
-				model.setName(id, "Track" + id);
-
-				final HashSet<CloudObject> Angleset = model.trackCloudObjects(id);
-
-				Iterator<CloudObject> Angleiter = Angleset.iterator();
-
-				while (Angleiter.hasNext()) {
-
-					CloudObject currentangle = Angleiter.next();
-					parent.TracklistChannelTwo.add(new ValuePair<String, CloudObject>(Integer.toString(id), currentangle));
-					
-				}
-				Collections.sort(parent.TracklistChannelTwo, ThirdDimcomparison);
-
-			}
-
-
-		}
-	}
 	
 	protected void DisplayGraph(SimpleWeightedGraph<CloudObject, DefaultWeightedEdge> simplegraph) {
 
@@ -234,45 +181,35 @@ public class TrackResult extends SwingWorker<Void, Void> {
 		for (Pair<String, CloudObject> currentangle : parent.Tracklist) {
 			
 				parent.resultIntensityA.add(new ValuePair<String, double[]>(currentangle.getA(),
-						new double[] { currentangle.getB().thirdDimension, currentangle.getB().totalintensity }));
+						new double[] { currentangle.getB().thirdDimension, currentangle.getB().averageintensity }));
 				
-				
+				parent.resultIntensityASec.add(new ValuePair<String, double[]>(currentangle.getA(),
+						new double[] { currentangle.getB().thirdDimension, currentangle.getB().averageintensityB }));
 				double cloudintensity = 0;
 				
 				for (int i= 0; i < currentangle.getB().roiobject.size(); ++i) {
 					
 					RoiObject roiob = currentangle.getB().roiobject.get(i);
-					cloudintensity+=roiob.totalintensity;
+					cloudintensity+=roiob.averageintensity;
 				}
 				
 				parent.resultIntensityB.add(new ValuePair<String, double[]>(currentangle.getA(),
 						new double[] { currentangle.getB().thirdDimension, cloudintensity }));
 			
-
+				double cloudintensityB = 0;
+				
+				for (int i= 0; i < currentangle.getB().roiobject.size(); ++i) {
+					
+					RoiObject roiob = currentangle.getB().roiobject.get(i);
+					cloudintensityB+=roiob.averageintensityB;
+				}
+				
+				parent.resultIntensityBSec.add(new ValuePair<String, double[]>(currentangle.getA(),
+						new double[] { currentangle.getB().thirdDimension, cloudintensityB }));
 
 		}
 		
-		
-		for (Pair<String, CloudObject> currentangle : parent.TracklistChannelTwo) {
-			
-			parent.resultIntensityASec.add(new ValuePair<String, double[]>(currentangle.getA(),
-					new double[] { currentangle.getB().thirdDimension, currentangle.getB().totalintensity }));
-			
-			
-			double cloudintensity = 0;
-			
-			for (int i= 0; i < currentangle.getB().roiobject.size(); ++i) {
-				
-				RoiObject roiob = currentangle.getB().roiobject.get(i);
-				cloudintensity+=roiob.totalintensity;
-			}
-			
-			parent.resultIntensityBSec.add(new ValuePair<String, double[]>(currentangle.getA(),
-					new double[] { currentangle.getB().thirdDimension, cloudintensity }));
-		
-
-
-	}
+	
 		
 		
 		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Location Z/T", "Mean Intensity" };

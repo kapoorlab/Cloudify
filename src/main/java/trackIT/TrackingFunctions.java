@@ -9,6 +9,7 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 import cloudFinder.CloudObject;
 import cloudTracker.CloudTrackCostFunction;
 import cloudTracker.KFsearch;
+import kalmanGUI.CovistoKalmanPanel;
 import pluginTools.InteractiveCloudify;
 import zGUI.CovistoZselectPanel;
 
@@ -26,7 +27,7 @@ public class TrackingFunctions {
 	
 	public SimpleWeightedGraph<CloudObject, DefaultWeightedEdge> Trackfunction() {
 		
-		parent.UserchosenCostFunction = new CloudTrackCostFunction(1, 0);
+		parent.UserchosenCostFunction = new CloudTrackCostFunction(CovistoKalmanPanel.alpha, CovistoKalmanPanel.beta);
 		
 
 		ArrayList<ArrayList<CloudObject>> colllist = new ArrayList<ArrayList<CloudObject>>();
@@ -52,32 +53,6 @@ public class TrackingFunctions {
 		
 	}
 	
-	public SimpleWeightedGraph<CloudObject, DefaultWeightedEdge> TrackfunctionChannelTwo() {
-		
-		parent.UserchosenCostFunction = new CloudTrackCostFunction(1, 0);
-		
-
-		ArrayList<ArrayList<CloudObject>> colllist = new ArrayList<ArrayList<CloudObject>>();
-		parent.AllCloudsChannelTwo = hashMapSorter.SortTimeorZ.sortByIntegerInter(parent.AllCloudsChannelTwo);
-		for (Map.Entry<String, ArrayList<CloudObject>> entry : parent.AllCloudsChannelTwo.entrySet()) {
-
-			ArrayList<CloudObject> bloblist = entry.getValue();
-			colllist.add(bloblist);
-		
-
-		}
-		
-		
-
-		KFsearch Tsearch = new KFsearch(colllist, parent.UserchosenCostFunction,  parent.maxSearchradius ,
-				 parent.maxSearchradius, 
-				 parent.missedframes, parent.AccountedZ, parent.jpb);
-		Tsearch.process();
-		SimpleWeightedGraph<CloudObject, DefaultWeightedEdge> simplegraph = Tsearch.getResult();
-
-		return simplegraph;
-		
-		
-	}
+	
 	
 }

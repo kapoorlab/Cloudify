@@ -269,7 +269,7 @@ public class DisplaySelectedTrack {
    	   		
    	 	if(parent.IntensityAdatasetSec!=null)
    	   		parent.IntensityAdatasetSec.removeAllSeries();
-   	   		parent.IntensityAdatasetSec.addSeries(ChartMaker.drawCurvePoints(currentresultIntA));
+   	   		parent.IntensityAdatasetSec.addSeries(ChartMaker.drawCurvePoints(currentresultIntASec));
 
    	   		parent.chartIntensityASec = utility.ChartMaker.makeChart(parent.IntensityAdatasetSec, "Cell - cloud intensity evolution (Ch2)", "Time", "Intensity");
    	   		

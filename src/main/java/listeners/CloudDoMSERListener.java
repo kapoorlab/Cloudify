@@ -7,6 +7,7 @@ import dogGUI.CovistoDogPanel;
 import interactivePreprocessing.InteractiveMethods;
 import mserGUI.CovistoMserPanel;
 import pluginTools.InteractiveCloudify;
+import pluginTools.InteractiveCloudify.ValueChange;
 import watershedGUI.CovistoWatershedPanel;
 
 public class CloudDoMSERListener implements ItemListener {
@@ -54,7 +55,7 @@ public class CloudDoMSERListener implements ItemListener {
 			CovistoWatershedPanel.displayDist.setVisible(false);
 			CovistoWatershedPanel.autothreshold.setVisible(false);
 			CovistoWatershedPanel.thresholdWaterslider.setVisible(false);
-			
+			parent.updatePreview(ValueChange.MSER);
 			
 		}
 

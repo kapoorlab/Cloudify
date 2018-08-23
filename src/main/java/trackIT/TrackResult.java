@@ -49,7 +49,6 @@ public class TrackResult extends SwingWorker<Void, Void> {
 
 		parent.table.removeAll();
 		parent.Tracklist.clear();
-		parent.TracklistChannelTwo.clear();
 
 		System.out.println("Making tracks");
 
@@ -181,16 +180,16 @@ public class TrackResult extends SwingWorker<Void, Void> {
 		for (Pair<String, CloudObject> currentangle : parent.Tracklist) {
 			
 				parent.resultIntensityA.add(new ValuePair<String, double[]>(currentangle.getA(),
-						new double[] { currentangle.getB().thirdDimension, currentangle.getB().averageintensity }));
+						new double[] { currentangle.getB().thirdDimension, currentangle.getB().totalintensity }));
 				
 				parent.resultIntensityASec.add(new ValuePair<String, double[]>(currentangle.getA(),
-						new double[] { currentangle.getB().thirdDimension, currentangle.getB().averageintensityB }));
+						new double[] { currentangle.getB().thirdDimension, currentangle.getB().totalintensityB }));
 				double cloudintensity = 0;
 				
 				for (int i= 0; i < currentangle.getB().roiobject.size(); ++i) {
 					
 					RoiObject roiob = currentangle.getB().roiobject.get(i);
-					cloudintensity+=roiob.averageintensity;
+					cloudintensity+=roiob.totalintensity;
 				}
 				
 				parent.resultIntensityB.add(new ValuePair<String, double[]>(currentangle.getA(),
@@ -201,7 +200,7 @@ public class TrackResult extends SwingWorker<Void, Void> {
 				for (int i= 0; i < currentangle.getB().roiobject.size(); ++i) {
 					
 					RoiObject roiob = currentangle.getB().roiobject.get(i);
-					cloudintensityB+=roiob.averageintensityB;
+					cloudintensityB+=roiob.totalintensityB;
 				}
 				
 				parent.resultIntensityBSec.add(new ValuePair<String, double[]>(currentangle.getA(),

@@ -185,7 +185,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public ImageStack prestack;
 	public static enum ValueChange {
 
-		MSER, DOG, FOURTHDIMmouse, THIRDDIMmouse, ALPHA, BETA;
+		MSER, DOG, FOURTHDIMmouse, THIRDDIMmouse, ALPHA, BETA, All;
 
 	}
 
@@ -302,7 +302,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 
 		imp.setTitle("Active image" + " " + "time point : " + CovistoTimeselectPanel.fourthDimension + " " + " Z: "
 				+ CovistoZselectPanel.thirdDimension);
-		
+		updatePreview(ValueChange.THIRDDIMmouse);
 		Card();
 	}
 

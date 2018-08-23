@@ -20,6 +20,9 @@ public class InteractiveCloudTracker {
 		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/JuliaData/RealTestCTrack/IntegerCell.tif");
 		impB.show();
 		
+		ImagePlus impC = new Opener().openImage("/Users/aimachine/Documents/JuliaData/RealTestCTrack/OriginalCH2.tif");
+		impC.show();
+		
 		ImagePlus impD = new Opener().openImage("/Users/aimachine/Documents/JuliaData/RealTestCTrack/Clouds.tif");
 		impD.show();
 		

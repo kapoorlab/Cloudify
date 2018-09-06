@@ -84,10 +84,8 @@ public class KFsearch implements CloudTracker {
 
 	    Collection<CloudObject> Firstorphan = Allblobs.get(0);
 		
-		String uniqueID = Integer.toString(Allblobs.get(0).get(0).thirdDimension) + Integer.toString(Allblobs.get(0).get(0).fourthDimension); 
 
 		Collection<CloudObject> Secondorphan = Allblobs.get(1);
-		String uniqueIDnext  = Integer.toString(Allblobs.get(1).get(0).thirdDimension) + Integer.toString(Allblobs.get(1).get(0).fourthDimension); 
 		// Max KF search cost.
 		final double maxCost = maxsearchRadius * maxsearchRadius;
 
@@ -113,9 +111,8 @@ public class KFsearch implements CloudTracker {
 		// Loop from the second frame to the last frame and build
 		// KalmanFilterMap
 		for (int i = 1; i < Allblobs.size();++i) {
-
-			if(Allblobs.get(i).size() > 0) {
-			uniqueIDnext =  Integer.toString(Allblobs.get(i).get(0).thirdDimension) + Integer.toString(Allblobs.get(i).get(0).fourthDimension);
+			
+		
 			List<CloudObject> measurements = Allblobs.get(i);
 			// Make the preditiction map
 			final Map<ComparableRealPoint, CVMKalmanFilter> predictionMap = new HashMap<ComparableRealPoint, CVMKalmanFilter>(
@@ -146,7 +143,7 @@ public class KFsearch implements CloudTracker {
 				final JaqamanLinker<ComparableRealPoint, CloudObject> linker = new JaqamanLinker<ComparableRealPoint, CloudObject>(
 						crm);
 				if (!linker.checkInput() || !linker.process()) {
-					errorMessage = BASE_ERROR_MSG + "Error linking candidates in frame " + uniqueIDnext + ": "
+					errorMessage = BASE_ERROR_MSG + "Error linking candidates in frame "  + ": "
 							+ linker.getErrorMessage();
 					return false;
 				}
@@ -167,7 +164,6 @@ public class KFsearch implements CloudTracker {
 					final DefaultWeightedEdge edge = graph.addEdge(source, target);
 					final double cost = costs.get(cm);
 					graph.setEdgeWeight(edge, cost);
-
 					// Update Kalman filter
 					kf.update(MeasureBlob(target));
 
@@ -196,7 +192,7 @@ public class KFsearch implements CloudTracker {
 						ic);
 
 				if (!newLinker.checkInput() || !newLinker.process()) {
-					errorMessage = BASE_ERROR_MSG + "Error linking Blobs from frame " + (uniqueIDnext)
+					errorMessage = BASE_ERROR_MSG + "Error linking Blobs from frame " 
 							+ " to next frame " + ": " + newLinker.getErrorMessage();
 					return false;
 				}
@@ -246,7 +242,7 @@ public class KFsearch implements CloudTracker {
 				}
 			}
 
-		}
+	
 		}
 		;
 		return true;

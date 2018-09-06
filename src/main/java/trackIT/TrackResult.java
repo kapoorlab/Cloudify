@@ -49,8 +49,7 @@ public class TrackResult extends SwingWorker<Void, Void> {
 
 		parent.table.removeAll();
 		parent.Tracklist.clear();
-
-		System.out.println("Making tracks");
+		parent.Finalresult.clear();
 
 		
 		TrackingFunctions track = new TrackingFunctions(parent);
@@ -74,14 +73,13 @@ public class TrackResult extends SwingWorker<Void, Void> {
 		int maxid = Integer.MIN_VALUE;
 		TrackModel model = new TrackModel(simplegraph);
 		
-		for (final Integer id : model.trackIDs(true)) {
+		for (final Integer id : model.trackIDs(false)) {
 
 			if (id > maxid)
 				maxid = id;
 
 			if (id < minid)
 				minid = id;
-
 		}
 		if (minid != Integer.MAX_VALUE) {
 
@@ -102,7 +100,9 @@ public class TrackResult extends SwingWorker<Void, Void> {
 				model.setName(id, "Track" + id);
 				parent.Globalmodel = model;
 				final HashSet<CloudObject> Angleset = model.trackCloudObjects(id);
-
+				
+				System.out.println(Angleset.size() + " ");
+				if (Angleset.size() > parent.AccountedZ.size() / 10) {
 				Iterator<CloudObject> Angleiter = Angleset.iterator();
 
 				while (Angleiter.hasNext()) {
@@ -114,11 +114,12 @@ public class TrackResult extends SwingWorker<Void, Void> {
 				Collections.sort(parent.Tracklist, ThirdDimcomparison);
 
 			}
+			}
 
 			for (int id = minid; id <= maxid; ++id) {
 				CloudObject bestangle = null;
 				
-				if (model.trackCloudObjects(id) != null) {
+				if (model.trackCloudObjects(id) != null && model.trackCloudObjects(id).size() > parent.AccountedZ.size() / 10) {
 
 					List<CloudObject> sortedList = new ArrayList<CloudObject>(model.trackCloudObjects(id));
 
@@ -243,6 +244,7 @@ public class TrackResult extends SwingWorker<Void, Void> {
 
 		parent.PanelSelectFile.removeAll();
 
+		System.out.println("In GUI table");
 		parent.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 		parent.scrollPane = new JScrollPane(parent.table);

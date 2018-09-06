@@ -35,16 +35,15 @@ public class TrackingFunctions {
 		for (Map.Entry<String, ArrayList<CloudObject>> entry : parent.AllClouds.entrySet()) {
 
 			ArrayList<CloudObject> bloblist = entry.getValue();
+			if(bloblist.size() > 0)
 			colllist.add(bloblist);
-		
 
 		}
-		
-		
 
-		KFsearch Tsearch = new KFsearch(colllist, parent.UserchosenCostFunction,  parent.maxSearchradius ,
-				 parent.maxSearchradius, 
-				 parent.missedframes, parent.AccountedZ, parent.jpb);
+		
+		KFsearch Tsearch = new KFsearch(colllist, parent.UserchosenCostFunction,  CovistoKalmanPanel.maxSearchradius ,
+				CovistoKalmanPanel.maxSearchradius, 
+				CovistoKalmanPanel.maxframegap, parent.AccountedZ, parent.jpb);
 		Tsearch.process();
 		SimpleWeightedGraph<CloudObject, DefaultWeightedEdge> simplegraph = Tsearch.getResult();
 

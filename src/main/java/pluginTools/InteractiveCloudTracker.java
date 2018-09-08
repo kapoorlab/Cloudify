@@ -14,16 +14,16 @@ public class InteractiveCloudTracker {
 		new ImageJ();
 		JFrame frame = new JFrame("");
 		
-		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/StemCellJulia/IlastikTraining/CTrackImages/res_MAX_20180629-TX1072-CL60-Dox0820_visit_2_ch_1.tif");
+		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/StemCellJulia/IlastikTraining/TestImages/decon_for_segmentation/Clouds.tif");
 		impA.show();
 		
-		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/StemCellJulia/IlastikTraining/CTrackImages/res_MAX_20180629-TX1072-CL60-Dox0820_visit_1_ch_2.tif");
+		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/StemCellJulia/IlastikTraining/TestImages/decon_for_segmentation/SmallLabelIgnoredGood2Bad1.tif");
 		impB.show();
 		
-		ImagePlus impC = new Opener().openImage("/Users/aimachine/Documents/StemCellJulia/IlastikTraining/CTrackImages/GoodLabel1BadLabel2.tif");
+		ImagePlus impC = new Opener().openImage("/Users/aimachine/Documents/StemCellJulia/IlastikTraining/TestImages/rawdata/C1-MAX_20180907-CL60-Dox0900-TT3h-TL5min_visit_5.tif");
 		impC.show();
 		
-		ImagePlus impD = new Opener().openImage("/Users/aimachine/Documents/StemCellJulia/IlastikTraining/CTrackImages/Clouds.tif");
+		ImagePlus impD = new Opener().openImage("/Users/aimachine/Documents/StemCellJulia/IlastikTraining/TestImages/rawdata/C2-MAX_20180907-CL60-Dox0900-TT3h-TL5min_visit_5.tif");
 		impD.show();
 		
 		

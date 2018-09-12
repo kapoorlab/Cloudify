@@ -129,7 +129,6 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public int[] Clickedpoints;
 	public ArrayList<Pair<String, double[]>> resultIntensityA;
 	public ArrayList<Pair<String, double[]>>  resultIntensityB;
-	public ArrayList<Pair<String, double[]>> resultIntensityASec;
 	public ArrayList<Pair<String, double[]>>  resultIntensityBSec;
 	public File saveFile;
 	public Frame jFreeChartFrameIntensityA;

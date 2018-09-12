@@ -37,7 +37,7 @@ for(int tablepos = 0; tablepos< parent.table.getRowCount(); ++tablepos) {
 			fw = new FileWriter(fichier);
 			BufferedWriter bw = new BufferedWriter(fw);
 
-			bw.write("\tTime (px)\t Intensity Cell \t Intensity Cloud  \n");
+			bw.write("\tTime (px)\t Total Intensity Cell \t Average Intensity Cell  \t Area \t Intensity Cloud  \n");
 
 			for (int index = 0; index < parent.resultIntensityA.size(); ++index) {
 
@@ -45,9 +45,12 @@ for(int tablepos = 0; tablepos< parent.table.getRowCount(); ++tablepos) {
 
 					int time = (int) parent.resultIntensityA.get(index).getB()[0];
 					double intensityCell = parent.resultIntensityA.get(index).getB()[1];
+					double averageintensityCell = parent.resultIntensityA.get(index).getB()[3];
+					double areaCell = parent.resultIntensityA.get(index).getB()[5];
+					
 					double intensityCloud = parent.resultIntensityB.get(index).getB()[1];
 
-					bw.write("\t" + time + "\t" + "\t" + intensityCell + "\t" + "\t" + intensityCloud +
+					bw.write("\t" + time + "\t" + "\t" + intensityCell + "\t" + "\t" + averageintensityCell  + "\t" + "\t" + areaCell  + "\t" + "\t"   + intensityCloud +
 
 							"\n");
 
@@ -69,20 +72,21 @@ for(int tablepos = 0; tablepos< parent.table.getRowCount(); ++tablepos) {
 			fwtwo = new FileWriter(fichiertwo);
 			BufferedWriter bwtwo = new BufferedWriter(fwtwo);
 
-			bwtwo.write("\tTime (px)\t Intensity Cell \t Intensity Cloud  \n");
+			bwtwo.write("\tTime (px)\t Total Intensity Cell \t Average Intensity Cell  \t Area \t Intensity Cloud  \n");
 
-			for (int index = 0; index < parent.resultIntensityASec.size(); ++index) {
+			for (int index = 0; index < parent.resultIntensityA.size(); ++index) {
 
-				if (ID.equals(parent.resultIntensityASec.get(index).getA())) {
+				if (ID.equals(parent.resultIntensityA.get(index).getA())) {
 
-					int time = (int) parent.resultIntensityASec.get(index).getB()[0];
-					double intensityCell = parent.resultIntensityASec.get(index).getB()[1];
+					int time = (int) parent.resultIntensityA.get(index).getB()[0];
+					double intensityCell = parent.resultIntensityA.get(index).getB()[2];
+					double averageintensityCell = parent.resultIntensityA.get(index).getB()[4];
+					double areaCell = parent.resultIntensityA.get(index).getB()[5];
 					double intensityCloud = parent.resultIntensityBSec.get(index).getB()[1];
 
-					bwtwo.write("\t" + time + "\t" + "\t" + intensityCell + "\t" + "\t" + intensityCloud +
+					bwtwo.write("\t" + time + "\t" + "\t" + intensityCell + "\t" + "\t" + averageintensityCell  + "\t" + "\t" + areaCell  + "\t" + "\t"   + intensityCloud +
 
 							"\n");
-
 				}
 
 			}

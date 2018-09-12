@@ -194,15 +194,7 @@ public class DisplaySelectedTrack {
 		
    		ArrayList<Pair<String, double[]>> currentresultIntASec = new ArrayList<Pair<String, double[]>>();
 
-   		for (Pair<String, double[]> currentInt : parent.resultIntensityASec) {
-
-   			if (ID.equals(currentInt.getA())) {
-
-   				currentresultIntASec.add(currentInt);
-
-   			}
-
-   		}
+   		
 
    		ArrayList<Pair<String, double[]>> currentresultIntBSec = new ArrayList<Pair<String, double[]>>();
    		for (Pair<String, double[]> currentIntB : parent.resultIntensityBSec) {
@@ -269,7 +261,7 @@ public class DisplaySelectedTrack {
    	   		
    	 	if(parent.IntensityAdatasetSec!=null)
    	   		parent.IntensityAdatasetSec.removeAllSeries();
-   	   		parent.IntensityAdatasetSec.addSeries(ChartMaker.drawCurvePoints(currentresultIntASec));
+   	   		parent.IntensityAdatasetSec.addSeries(ChartMaker.drawCurvePointsSecond(currentresultIntASec));
 
    	   		parent.chartIntensityASec = utility.ChartMaker.makeChart(parent.IntensityAdatasetSec, "Cell - cloud intensity evolution (Ch2)", "Time", "Intensity");
    	   		

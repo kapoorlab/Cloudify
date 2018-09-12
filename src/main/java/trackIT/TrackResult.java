@@ -176,16 +176,15 @@ public class TrackResult extends SwingWorker<Void, Void> {
 		parent.resultIntensityA = new ArrayList<Pair<String, double[]>>();
 		parent.resultIntensityB = new ArrayList<Pair<String, double[]>>();
 		
-		parent.resultIntensityASec = new ArrayList<Pair<String, double[]>>();
 		parent.resultIntensityBSec = new ArrayList<Pair<String, double[]>>();
 		
 		for (Pair<String, CloudObject> currentangle : parent.Tracklist) {
 			
 				parent.resultIntensityA.add(new ValuePair<String, double[]>(currentangle.getA(),
-						new double[] { currentangle.getB().thirdDimension, currentangle.getB().totalintensity }));
+						new double[] { currentangle.getB().thirdDimension, currentangle.getB().totalintensity, currentangle.getB().totalintensityB , currentangle.getB().averageintensity,
+								currentangle.getB().averageintensityB, currentangle.getB().area}));
 				
-				parent.resultIntensityASec.add(new ValuePair<String, double[]>(currentangle.getA(),
-						new double[] { currentangle.getB().thirdDimension, currentangle.getB().totalintensityB }));
+			
 				double cloudintensity = 0;
 				
 				for (int i= 0; i < currentangle.getB().roiobject.size(); ++i) {

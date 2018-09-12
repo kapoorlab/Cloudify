@@ -75,6 +75,16 @@ public class ChartMaker {
 		}
 		return series;
 	}
+	
+	public static XYSeries drawPointsSecond(final List<Pair<String, double[]>> mts, final String name) {
+		XYSeries series = new XYSeries(name);
+
+		if (mts != null) {
+			for (final Pair<String, double[]> mt : mts)
+				series.add(mt.getB()[0], mt.getB()[2]);
+		}
+		return series;
+	}
 	public static XYSeries drawSegPoints(final ArrayList<Pair<String, Pair<Integer, Double>>> mts, final String name) {
 		XYSeries series = new XYSeries(name);
 
@@ -116,6 +126,10 @@ public class ChartMaker {
 	public static XYSeries drawCurvePoints(final List<Pair<String, double[]>> mts) {
 		return drawPoints(mts, "Evolution");
 	}
+	public static XYSeries drawCurvePointsSecond(final List<Pair<String, double[]>> mts) {
+		return drawPointsSecond(mts, "Evolution");
+	}
+
 
 	public static XYSeries drawCurveSegPoints(final ArrayList<Pair<String, Pair<Integer, Double>>> mts) {
 		return drawSegPoints(mts, "Evolution");

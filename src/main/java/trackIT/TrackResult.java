@@ -241,22 +241,35 @@ public class TrackResult extends SwingWorker<Void, Void> {
 	
 	
 	public static void makeGUI(final InteractiveCloudify parent) {
-
-		parent.PanelSelectFile.removeAll();
-
-		System.out.println("In GUI table");
-		parent.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-
-		parent.scrollPane = new JScrollPane(parent.table);
-
-		parent.scrollPane.getViewport().add(parent.table);
-		parent.scrollPane.setAutoscrolls(true);
-		parent.PanelSelectFile.add(parent.scrollPane, BorderLayout.CENTER);
-
-		parent.PanelSelectFile.setBorder(parent.selectcell);
-
-	
 		
+		
+		  parent.PanelSelectFile.removeAll();
+			
+			parent.table.setFillsViewportHeight(true);
+
+			parent.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			parent.scrollPane = new JScrollPane(parent.table);
+
+			parent.scrollPane.getViewport().add(parent.table);
+			parent.scrollPane.setAutoscrolls(true);
+			parent.PanelSelectFile.add(parent.scrollPane, BorderLayout.CENTER);
+
+			parent.PanelSelectFile.setBorder(parent.selectfile);
+
+
+			int size = 100;
+			parent.table.getColumnModel().getColumn(0).setPreferredWidth(size);
+			parent.table.getColumnModel().getColumn(1).setPreferredWidth(size);
+			parent.table.getColumnModel().getColumn(2).setPreferredWidth(size);
+			parent.table.getColumnModel().getColumn(3).setPreferredWidth(size);
+			parent.table.getColumnModel().getColumn(4).setPreferredWidth(size);
+			parent.table.setPreferredScrollableViewportSize(parent.table.getPreferredSize());
+			
+			parent.table.setMinimumSize(parent.table.getPreferredSize());
+
+			
+			parent.scrollPane.setMinimumSize(parent.table.getPreferredSize());
+			
 		parent.PanelSelectFile.repaint();
 		parent.PanelSelectFile.validate();
 		parent.table.repaint();

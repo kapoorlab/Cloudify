@@ -166,8 +166,8 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public RandomAccessibleInterval<IntType> CurrentViewIntSegoriginalimg;
 	public ArrayList<Pair<String, CloudObject>> Tracklist;
 	public ArrayList<Pair<String, CloudObject>> TracklistChannelTwo;
-	public boolean showMSER = false;
-	public boolean showDOG = true;
+	public boolean showMSER = true;
+	public boolean showDOG = false;
 	public int rowchoice;
 		
 		
@@ -216,23 +216,23 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		this.IntensityAdatasetSec = new XYSeriesCollection();
 		this.IntensityBdatasetSec = new XYSeriesCollection();
 		
-		this.chartIntensityA = utility.ChartMaker.makeChart(IntensityAdataset, "Cell - Cloud Intensity evolution", "Timepoint", "IntensityA");
+		this.chartIntensityA = utility.ChartMaker.makeChart(IntensityAdataset, "Cell - Cloud (Ch1) Intensity evolution", "Timepoint", "Intensity");
 		
 		
 		this.jFreeChartFrameIntensityA = utility.ChartMaker.display(chartIntensityA, new Dimension(500, 500));
 		this.jFreeChartFrameIntensityA.setVisible(false);
 		
-		this.chartIntensityB = utility.ChartMaker.makeChart(IntensityBdataset, "Cloud Intensity evolution", "Timepoint", "IntensityB");
+		this.chartIntensityB = utility.ChartMaker.makeChart(IntensityBdataset, "Cloud Intensity evolution (Ch1)", "Timepoint", "Intensity");
 		this.jFreeChartFrameIntensityB = utility.ChartMaker.display(chartIntensityB, new Dimension(500, 500));
 		this.jFreeChartFrameIntensityB.setVisible(false);
 		
-	    this.chartIntensityASec = utility.ChartMaker.makeChart(IntensityAdatasetSec, "Cell - Cloud Intensity evolution", "Timepoint", "IntensityA");
+	    this.chartIntensityASec = utility.ChartMaker.makeChart(IntensityAdatasetSec, "Cell - Cloud Intensity evolution (Ch2)", "Timepoint", "Intensity");
 		
 		
 		this.jFreeChartFrameIntensityASec = utility.ChartMaker.display(chartIntensityASec, new Dimension(500, 500));
 		this.jFreeChartFrameIntensityASec.setVisible(false);
 		
-		this.chartIntensityBSec = utility.ChartMaker.makeChart(IntensityBdatasetSec, "Cloud Intensity evolution", "Timepoint", "IntensityB");
+		this.chartIntensityBSec = utility.ChartMaker.makeChart(IntensityBdatasetSec, "Cloud Intensity evolution (Ch2)", "Timepoint", "Intensity");
 		this.jFreeChartFrameIntensityBSec = utility.ChartMaker.display(chartIntensityBSec, new Dimension(500, 500));
 		this.jFreeChartFrameIntensityBSec.setVisible(false);
 	}
@@ -495,12 +495,11 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		c.gridx = 0;
 
 		
-		Object[] colnames;
-		Object[][] rowvalues;
 		
-		colnames = new Object[] { "", "", "","",
-				"" };
-		rowvalues = new Object[0][colnames.length];
+		
+		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Location Z/T", "Mean Intensity" };
+
+		Object[][] rowvalues = new Object[0][colnames.length];
 		
 		if (Finalresult != null && Finalresult.size() > 0) {
 
@@ -513,7 +512,6 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		
 		
 		table.setFillsViewportHeight(true);
-
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 		scrollPane = new JScrollPane(table);
@@ -524,44 +522,26 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		PanelSelectFile.add(scrollPane, BorderLayout.CENTER);
 
 		PanelSelectFile.setBorder(selectfile);
+		int size = 100;
+		table.getColumnModel().getColumn(0).setPreferredWidth(size);
+		table.getColumnModel().getColumn(1).setPreferredWidth(size);
+		table.getColumnModel().getColumn(2).setPreferredWidth(size);
+		table.getColumnModel().getColumn(3).setPreferredWidth(size);
+		table.getColumnModel().getColumn(4).setPreferredWidth(size);
+		table.setPreferredScrollableViewportSize(table.getPreferredSize());
+		table.setFillsViewportHeight(true);
 
-		panelSecond.add(PanelSelectFile, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
-		
-		PanelSelectFile.setPreferredSize(new Dimension(SizeX, 2 * SizeY));
-		
-		Border methodborder = new CompoundBorder(new TitledBorder("Choose a colud finder"), new EmptyBorder(c.insets));
-		// Put time slider
-		Timeselect = CovistoTimeselectPanel.TimeselectPanel(ndims);
-
-		panelFirst.add(Timeselect, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-				GridBagConstraints.HORIZONTAL, insets, 0, 0));
 		// Put z slider
 
 		Zselect = CovistoZselectPanel.ZselectPanel(ndims);
 
-		panelFirst.add(Zselect, new GridBagConstraints(3, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.HORIZONTAL, insets, 0, 0));
-		DetectionPanel.add(DOG, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.HORIZONTAL, insets, 0, 0));
-		DetectionPanel.add(MSER, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-		DetectionPanel.setBorder(methodborder);
-		panelFirst.add(DetectionPanel, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.HORIZONTAL, insets, 0, 0));
-
-		// Difference of Gaussian detection panel
-		DogPanel = CovistoDogPanel.DogPanel();
-		DogPanel.setPreferredSize(new Dimension(SizeX, SizeY));
-		panelFirst.add(DogPanel, new GridBagConstraints(0, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.HORIZONTAL, insets, 0, 0));
+		panelFirst.add(Zselect, new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 
 		// Mser detection panel
 		MserPanel = CovistoMserPanel.MserPanel();
-		MserPanel.setPreferredSize(new Dimension(SizeX, 2 * SizeY));
-		panelFirst.add(MserPanel, new GridBagConstraints(3, 3, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
+		panelFirst.add(MserPanel, new GridBagConstraints(3, 0, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 
 		KalmanPanel = CovistoKalmanPanel.KalmanPanel();
 		
@@ -607,19 +587,13 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 			}
 		}));
 		
-		
-		panelFirst.add(controlnext, new GridBagConstraints(3, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+
+		panelFirst.add(KalmanPanel, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-		panelSecond.add(KalmanPanel, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-		panelSecond.add(PanelSelectFile, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		panelFirst.add(PanelSelectFile, new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		
-		
-		panelSecond.add(controlprev, new GridBagConstraints(0, 10, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-		panelSecond.add(controlnextsec, new GridBagConstraints(0, 15, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+	
 		CovistoKalmanPanel.Timetrack.addActionListener(new LinkobjectListener(this));
 		CovistoKalmanPanel.lostframe.addTextListener(new PRELostFrameListener(this));
 		CovistoKalmanPanel.alphaS.addAdjustmentListener(new PREAlphaListener(this, CovistoKalmanPanel.alphaText,
@@ -646,9 +620,15 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		CovistoSavePanel.SaveAllbutton.addActionListener(new SaveAllListener(this));
 		CovistoSavePanel.ChooseDirectory.addActionListener(new SaverDirectory(this) );
 		
-		panelThird.add(Original, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		panelFirst.add(Original, new GridBagConstraints(4, 1, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		
+	//	panelSecond.add(PanelSelectFile, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+	//			GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
+	//	panelFirst.add(controlnext, new GridBagConstraints(3, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
+	//			GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+	//	panelSecond.add(controlprev, new GridBagConstraints(0, 10, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
+	//			GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		
 		panelThird.add(controlprevthird, new GridBagConstraints(0, 10, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
@@ -705,31 +685,15 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 					CovistoZselectPanel.thirdDimensionSize, scrollbarSize, CovistoZselectPanel.zslider));
 
 		CovistoZselectPanel.inputFieldZ.addTextListener(new PreZlocListener(this, false));
-		CovistoTimeselectPanel.inputFieldT.addTextListener(new PreTlocListener(this, false));
+		//CovistoTimeselectPanel.inputFieldT.addTextListener(new PreTlocListener(this, false));
 
 		Cardframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		cl.show(panelCont, "1");
-		CovistoDogPanel.sigmaslider.setVisible(true);
-		CovistoDogPanel.thresholdslider.setVisible(true);
-		CovistoDogPanel.findmaxima.setVisible(true);
-		CovistoDogPanel.findminima.setVisible(true);
 		
-		CovistoMserPanel.deltaS.setVisible(false);
-		CovistoMserPanel.Unstability_ScoreS.setVisible(false);
-		CovistoMserPanel.minDiversityS.setVisible(false);
-		CovistoMserPanel.minSizeS.setVisible(false);
-		CovistoMserPanel.maxSizeS.setVisible(false);
-		CovistoMserPanel.findminimaMser.setVisible(false);
-		CovistoMserPanel.findmaximaMser.setVisible(false);
-		
-		CovistoWatershedPanel.displayWater.setVisible(false);
-		CovistoWatershedPanel.displayBinary.setVisible(false);
-		CovistoWatershedPanel.displayDist.setVisible(false);
-		CovistoWatershedPanel.autothreshold.setVisible(false);
-		CovistoWatershedPanel.thresholdWaterslider.setVisible(false);
 		Cardframe.add(panelCont, "Center");
 		Cardframe.add(jpb, "Last");
 		panelFirst.setVisible(true);
+
 		Cardframe.pack();
 		Cardframe.setVisible(true);
 	}

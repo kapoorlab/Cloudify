@@ -165,8 +165,8 @@ public class DisplaySelectedTrack {
 
 					parent.table.validate();
 					parent.scrollPane.validate();
-					parent.panelSecond.repaint();
-					parent.panelSecond.validate();
+					parent.panelFirst.repaint();
+					parent.panelFirst.validate();
 
 				}
 

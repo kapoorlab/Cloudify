@@ -19,6 +19,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
 
@@ -30,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -69,6 +71,7 @@ import net.imglib2.algorithm.componenttree.mser.MserTree;
 import net.imglib2.algorithm.localextrema.RefinedPeak;
 import net.imglib2.algorithm.stats.Normalize;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.Type;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
@@ -106,6 +109,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public float alphaMax = 1;
 	public float betaMin = 0;
 	public float betaMax = 1;
+	public int background = -1;
 	public JTable table;
 	public int row;
 	public int tablesize;
@@ -298,6 +302,16 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 				CovistoZselectPanel.thirdDimensionSize,CovistoTimeselectPanel.fourthDimension,
 				CovistoTimeselectPanel.fourthDimensionSize);
 
+		
+		
+		IntType min = new IntType();
+		IntType max = new IntType();
+		computeMinMax(Views.iterable(CurrentViewIntSegoriginalimg), min, max);
+		// Neglect the background class label
+		int currentLabel = min.get();
+
+		background = currentLabel;
+		
 		imp = ImageJFunctions.show(CurrentViewOrig);
 
 		imp.setTitle("Active image" + " " + "time point : " + CovistoTimeselectPanel.fourthDimension + " " + " Z: "
@@ -450,8 +464,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public JPanel KalmanPanel = new JPanel();
 	public JFileChooser chooserA = new JFileChooser();
 	public JPanel panelFirst = new JPanel();
-	public JPanel panelSecond = new JPanel();
-	public JPanel panelThird = new JPanel();
+
 	
 	public JPanel PanelSelectFile = new JPanel();
 	public JPanel panelCont = new JPanel();
@@ -472,7 +485,6 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	int SizeX = 400;
 	int SizeY = 200;
 	public Border selectfile = new CompoundBorder(new TitledBorder("Select Track"), new EmptyBorder(c.insets));
-	public Border selectcell = new CompoundBorder(new TitledBorder("Select Cell"), new EmptyBorder(c.insets));
 	public void Card() {
 
 		CardLayout cl = new CardLayout();
@@ -481,11 +493,9 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		panelCont.setLayout(cl);
 
 		panelCont.add(panelFirst, "1");
-		panelCont.add(panelSecond, "2");
-		panelCont.add(panelThird, "3");
+		
 		panelFirst.setLayout(layout);
-		panelSecond.setLayout(layout);
-		panelThird.setLayout(layout);
+		
 		c.anchor = GridBagConstraints.BOTH;
 		c.ipadx = 35;
 
@@ -513,12 +523,13 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		
 		table.setFillsViewportHeight(true);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-
+		
 		scrollPane = new JScrollPane(table);
 
 		scrollPane.getViewport().add(table);
 		scrollPane.setAutoscrolls(true);
-
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		PanelSelectFile.add(scrollPane, BorderLayout.CENTER);
 
 		PanelSelectFile.setBorder(selectfile);
@@ -530,7 +541,9 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		table.getColumnModel().getColumn(4).setPreferredWidth(size);
 		table.setPreferredScrollableViewportSize(table.getPreferredSize());
 		table.setFillsViewportHeight(true);
-
+		table.isOpaque();
+		scrollPane.setMinimumSize(new Dimension(300, 200));
+		scrollPane.setPreferredSize(new Dimension(300, 200));
 		// Put z slider
 
 		Zselect = CovistoZselectPanel.ZselectPanel(ndims);
@@ -540,57 +553,17 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 
 		// Mser detection panel
 		MserPanel = CovistoMserPanel.MserPanel();
-		panelFirst.add(MserPanel, new GridBagConstraints(3, 0, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		panelFirst.add(MserPanel, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 
 		KalmanPanel = CovistoKalmanPanel.KalmanPanel();
 		
 		
-		JPanel controlprev = new JPanel();
-		JPanel controlprevthird = new JPanel();
-		JPanel controlnext = new JPanel();
-		JPanel controlnextsec = new JPanel();
-		controlprev.setLayout(layout);
-		controlprevthird.setLayout(layout);
-		controlnext.setLayout(layout);
-		controlnextsec.setLayout(layout);
-		controlprev.add(new JButton(new AbstractAction("\u22b2Prev") {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				CardLayout cl = (CardLayout) panelCont.getLayout();
-				cl.previous(panelCont);
-			}
-		}));
-		controlprevthird.add(new JButton(new AbstractAction("\u22b2Prev") {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				CardLayout cl = (CardLayout) panelCont.getLayout();
-				cl.previous(panelCont);
-			}
-		}));
-		controlnext.add(new JButton(new AbstractAction("Next\u22b3") {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				CardLayout cl = (CardLayout) panelCont.getLayout();
-				cl.next(panelCont);
-			}
-		}));
-		controlnextsec.add(new JButton(new AbstractAction("Next\u22b3") {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				CardLayout cl = (CardLayout) panelCont.getLayout();
-				cl.next(panelCont);
-			}
-		}));
 		
 
-		panelFirst.add(KalmanPanel, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		panelFirst.add(KalmanPanel, new GridBagConstraints(3, 0, 2, 1, 0.0, 0.0, GridBagConstraints.EAST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-		panelFirst.add(PanelSelectFile, new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
+		panelFirst.add(PanelSelectFile, new GridBagConstraints(4, 2, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		
 	
@@ -623,15 +596,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		panelFirst.add(Original, new GridBagConstraints(4, 1, 2, 1, 0.0, 0.0, GridBagConstraints.WEST,
 				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
 		
-	//	panelSecond.add(PanelSelectFile, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-	//			GridBagConstraints.RELATIVE, new Insets(10, 10, 0, 10), 0, 0));
-	//	panelFirst.add(controlnext, new GridBagConstraints(3, 4, 3, 1, 0.0, 0.0, GridBagConstraints.EAST,
-	//			GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-	//	panelSecond.add(controlprev, new GridBagConstraints(0, 10, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-	//			GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
-		
-		panelThird.add(controlprevthird, new GridBagConstraints(0, 10, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
-				GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 10), 0, 0));
+	
 		
 		CovistoDogPanel.findminima.addItemListener(new FindMinimaListener(this));
 		CovistoDogPanel.findmaxima.addItemListener(new FindMaximaListener(this));
@@ -689,7 +654,6 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 
 		Cardframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		cl.show(panelCont, "1");
-		
 		Cardframe.add(panelCont, "Center");
 		Cardframe.add(jpb, "Last");
 		panelFirst.setVisible(true);
@@ -700,6 +664,29 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 
 
 
+	public static <T extends Comparable<T> & Type<T>> void computeMinMax(final Iterable<T> input, final T min,
+			final T max) {
+		// create a cursor for the image (the order does not matter)
+		final Iterator<T> iterator = input.iterator();
+
+		// initialize min and max with the first image value
+		T type = iterator.next();
+
+		min.set(type);
+		max.set(type);
+
+		// loop over the rest of the data and determine min and max value
+		while (iterator.hasNext()) {
+			// we need this type more than once
+			type = iterator.next();
+
+			if (type.compareTo(min) < 0)
+				min.set(type);
+
+			if (type.compareTo(max) > 0)
+				max.set(type);
+		}
+	}
 
 
 

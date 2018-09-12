@@ -55,6 +55,8 @@ public class MSERSeg {
 		while (setiter.hasNext()) {
 
 			int label = setiter.next();
+			
+			if(label!=parent.background) {
 			// Get the region 
 			RandomAccessibleInterval<FloatType> current = Watershedobject.CurrentDetectionImage(parent, parent.CurrentViewIntSegoriginalimg, parent.CurrentViewSegoriginalimg , label);
 			
@@ -104,7 +106,7 @@ public class MSERSeg {
 			
 		}
 		
-		
+		}
 		  parent.AllClouds.put(uniqueID, Allclouds);
 
 		

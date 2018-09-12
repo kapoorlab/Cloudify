@@ -1,6 +1,7 @@
 package trackIT;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.text.NumberFormat;
@@ -14,6 +15,7 @@ import java.util.Map;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingWorker;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -101,8 +103,7 @@ public class TrackResult extends SwingWorker<Void, Void> {
 				parent.Globalmodel = model;
 				final HashSet<CloudObject> Angleset = model.trackCloudObjects(id);
 				
-				System.out.println(Angleset.size() + " ");
-				if (Angleset.size() > parent.AccountedZ.size() / 10) {
+			
 				Iterator<CloudObject> Angleiter = Angleset.iterator();
 
 				while (Angleiter.hasNext()) {
@@ -113,13 +114,13 @@ public class TrackResult extends SwingWorker<Void, Void> {
 				}
 				Collections.sort(parent.Tracklist, ThirdDimcomparison);
 
-			}
+			
 			}
 
 			for (int id = minid; id <= maxid; ++id) {
 				CloudObject bestangle = null;
 				
-				if (model.trackCloudObjects(id) != null && model.trackCloudObjects(id).size() > parent.AccountedZ.size() / 10) {
+				if (model.trackCloudObjects(id) != null) {
 
 					List<CloudObject> sortedList = new ArrayList<CloudObject>(model.trackCloudObjects(id));
 
@@ -248,14 +249,7 @@ public class TrackResult extends SwingWorker<Void, Void> {
 			parent.table.setFillsViewportHeight(true);
 
 			parent.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-			parent.scrollPane = new JScrollPane(parent.table);
-
-			parent.scrollPane.getViewport().add(parent.table);
-			parent.scrollPane.setAutoscrolls(true);
-			parent.PanelSelectFile.add(parent.scrollPane, BorderLayout.CENTER);
-
-			parent.PanelSelectFile.setBorder(parent.selectfile);
-
+		
 
 			int size = 100;
 			parent.table.getColumnModel().getColumn(0).setPreferredWidth(size);
@@ -267,15 +261,31 @@ public class TrackResult extends SwingWorker<Void, Void> {
 			
 			parent.table.setMinimumSize(parent.table.getPreferredSize());
 
+			parent.scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+			parent.scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+			parent.scrollPane = new JScrollPane(parent.table);
+
+			parent.scrollPane.getViewport().add(parent.table);
+			parent.scrollPane.setAutoscrolls(true);
 			
-			parent.scrollPane.setMinimumSize(parent.table.getPreferredSize());
+			parent.PanelSelectFile.add(parent.scrollPane, BorderLayout.CENTER);
+
+			parent.PanelSelectFile.setBorder(parent.selectfile);
+
 			
-		parent.PanelSelectFile.repaint();
-		parent.PanelSelectFile.validate();
+			parent.table.isOpaque();
+			parent.scrollPane.setMinimumSize(new Dimension(300, 200));
+			parent.scrollPane.setPreferredSize(new Dimension(300, 200));
+		
 		parent.table.repaint();
 		parent.table.validate();
-		parent.panelSecond.repaint();
-		parent.panelSecond.validate();
+		
+		parent.scrollPane.repaint();
+		parent.scrollPane.validate();
+		parent.PanelSelectFile.repaint();
+		parent.PanelSelectFile.validate();
+		parent.panelFirst.repaint();
+		parent.panelFirst.validate();
 		parent.Cardframe.repaint();
 		parent.Cardframe.validate();
 

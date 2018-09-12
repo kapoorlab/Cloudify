@@ -186,26 +186,28 @@ public class TrackResult extends SwingWorker<Void, Void> {
 				
 			
 				double cloudintensity = 0;
-				
+				double cloudarea = 0;
 				for (int i= 0; i < currentangle.getB().roiobject.size(); ++i) {
 					
 					RoiObject roiob = currentangle.getB().roiobject.get(i);
 					cloudintensity+=roiob.totalintensity;
+					cloudarea += roiob.numberofpixels; 
 				}
 				
 				parent.resultIntensityB.add(new ValuePair<String, double[]>(currentangle.getA(),
-						new double[] { currentangle.getB().thirdDimension, cloudintensity }));
+						new double[] { currentangle.getB().thirdDimension, cloudintensity, cloudarea }));
 			
 				double cloudintensityB = 0;
-				
+				double cloudareaB = 0;
 				for (int i= 0; i < currentangle.getB().roiobject.size(); ++i) {
 					
 					RoiObject roiob = currentangle.getB().roiobject.get(i);
 					cloudintensityB+=roiob.totalintensityB;
+					cloudareaB += roiob.numberofpixels;
 				}
 				
 				parent.resultIntensityBSec.add(new ValuePair<String, double[]>(currentangle.getA(),
-						new double[] { currentangle.getB().thirdDimension, cloudintensityB }));
+						new double[] { currentangle.getB().thirdDimension, cloudintensityB, cloudareaB }));
 
 		}
 		

@@ -50,14 +50,16 @@ public class MeasureProperties {
 				
 				ranac.setPosition(iter);
 				ranac.get().set(iter.get());
-				
-				for(Roi currentroi : parent.Rois) {
-					
 				int x = ranac.getIntPosition(0);
 				int y = ranac.getIntPosition(1);
 				
+				
+				for(Roi currentroi : parent.Rois) {
+					
 				if(currentroi.contains(x, y))
 					ranac.get().setZero();
+				
+					
 				
 			}
 			
@@ -75,12 +77,10 @@ public class MeasureProperties {
 					
 					ranacB.setPosition(iterB);
 					ranacB.get().set(iterB.get());
-					
-					for(Roi currentroi : parent.Rois) {
-						
 					int x = ranacB.getIntPosition(0);
 					int y = ranacB.getIntPosition(1);
-					
+					for(Roi currentroi : parent.Rois) {
+						
 					if(currentroi.contains(x, y))
 						ranacB.get().setZero();
 					

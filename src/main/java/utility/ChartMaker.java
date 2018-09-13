@@ -18,6 +18,7 @@ import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import cloudFinder.CloudTrackObject;
 import net.imglib2.util.Pair;
 
 public class ChartMaker {
@@ -123,6 +124,46 @@ public class ChartMaker {
 		return series;
 	}
 
+	
+	public static XYSeries drawIntensityChA(final List<Pair<String, CloudTrackObject>> mts, String name) {
+		XYSeries series = new XYSeries(name);
+
+		if (mts != null) {
+			for (final Pair<String, CloudTrackObject> mt : mts)
+				series.add(mt.getB().thirdDimension, mt.getB().totalIntensityChA);
+		}
+		return series;
+	}
+	public static XYSeries drawIntensityChB(final List<Pair<String, CloudTrackObject>> mts, String name) {
+		XYSeries series = new XYSeries(name);
+
+		if (mts != null) {
+			for (final Pair<String, CloudTrackObject> mt : mts)
+				series.add(mt.getB().thirdDimension, mt.getB().totalIntensityChB);
+		}
+		return series;
+	}
+	
+	public static XYSeries drawIntensityCloudChA(final List<Pair<String, CloudTrackObject>> mts, String name) {
+		XYSeries series = new XYSeries(name);
+
+		if (mts != null) {
+			for (final Pair<String, CloudTrackObject> mt : mts)
+				series.add(mt.getB().thirdDimension, mt.getB().CloudIntensityChA);
+		}
+		return series;
+	}
+	public static XYSeries drawIntensityCloudChB(final List<Pair<String, CloudTrackObject>> mts, String name) {
+		XYSeries series = new XYSeries(name);
+
+		if (mts != null) {
+			for (final Pair<String, CloudTrackObject> mt : mts)
+				series.add(mt.getB().thirdDimension, mt.getB().CloudIntensityChB);
+		}
+		return series;
+	}
+	
+	
 	public static XYSeries drawCurvePoints(final List<Pair<String, double[]>> mts) {
 		return drawPoints(mts, "Evolution");
 	}

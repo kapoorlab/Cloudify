@@ -34,6 +34,13 @@ public class CloudObject extends AbstractEuclideanSpace implements RealLocalizab
 	private String name;
 	private final ConcurrentHashMap< String, Double > features = new ConcurrentHashMap< String, Double >();
 	public static AtomicInteger IDcounter = new AtomicInteger( -1 );
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * 
 	 * Integer image with the label, geometric center, intensity and area are for the image

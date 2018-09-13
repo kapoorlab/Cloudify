@@ -39,20 +39,24 @@ for(int tablepos = 0; tablepos< parent.table.getRowCount(); ++tablepos) {
 
 			bw.write("\tTime (px)\t Total Intensity Cell \t Average Intensity Cell  \t AreaCell \t Total Intensity Cloud  \t Mean Intensity Cloud \t AreaCloud \n");
 
-			for (int index = 0; index < parent.resultIntensityA.size(); ++index) {
+			for (int index = 0; index < parent.resultIntensity.size(); ++index) {
 
-				if (ID.equals(parent.resultIntensityA.get(index).getA())) {
+				if (ID.equals(parent.resultIntensity.get(index).getA())) {
 
-					int time = (int) parent.resultIntensityA.get(index).getB()[0];
-					double intensityCell = parent.resultIntensityA.get(index).getB()[1];
-					double averageintensityCell = parent.resultIntensityA.get(index).getB()[3];
-					double areaCell = parent.resultIntensityA.get(index).getB()[5];
+					int time = (int) parent.resultIntensity.get(index).getB().thirdDimension;
+					double intensityCell = parent.resultIntensity.get(index).getB().totalIntensityChA;
+					double averageintensityCell = 0;
+					double areaCell = parent.resultIntensity.get(index).getB().Nucleiarea;
 					
-					double intensityCloud = parent.resultIntensityB.get(index).getB()[1];
-					double areaCloud = parent.resultIntensityB.get(index).getB()[2];
+					double intensityCloud = parent.resultIntensity.get(index).getB().CloudIntensityChA;
+					double areaCloud = parent.resultIntensity.get(index).getB().Cloudarea;
 					double meanintensityCloud = 0 ;
 					if(areaCloud!= 0)
 					 meanintensityCloud = intensityCloud / areaCloud;
+					if(areaCell!=0)
+						averageintensityCell = intensityCell / areaCell;
+					
+					
 					bw.write("\t" + time + "\t" + "\t" + parent.nf.format(intensityCell) + "\t" + "\t" + parent.nf.format(averageintensityCell)  + "\t" + "\t"  + "\t" + "\t"
 		                     + parent.nf.format(areaCell)  + "\t" + "\t"   + parent.nf.format(intensityCloud) +"\t" + "\t" +
 								"\t" + "\t"   + parent.nf.format(meanintensityCloud) + "\t" + "\t"   + "\t" + "\t" + parent.nf.format(areaCloud) +
@@ -78,19 +82,24 @@ for(int tablepos = 0; tablepos< parent.table.getRowCount(); ++tablepos) {
 
 			bwtwo.write("\tTime (px)\t Total Intensity Cell \t Average Intensity Cell  \t AreaCell \t Total Intensity Cloud \t Mean Intensity Cloud  \t AreaCloud \n");
 
-			for (int index = 0; index < parent.resultIntensityA.size(); ++index) {
+			for (int index = 0; index < parent.resultIntensity.size(); ++index) {
 
-				if (ID.equals(parent.resultIntensityA.get(index).getA())) {
+				if (ID.equals(parent.resultIntensity.get(index).getA())) {
 
-					int time = (int) parent.resultIntensityA.get(index).getB()[0];
-					double intensityCell = parent.resultIntensityA.get(index).getB()[2];
-					double averageintensityCell = parent.resultIntensityA.get(index).getB()[4];
-					double areaCell = parent.resultIntensityA.get(index).getB()[5];
-					double intensityCloud = parent.resultIntensityBSec.get(index).getB()[1];
-					double areaCloud = parent.resultIntensityB.get(index).getB()[2];
+					int time = (int) parent.resultIntensity.get(index).getB().thirdDimension;
+					double intensityCell = parent.resultIntensity.get(index).getB().totalIntensityChB;
+					double averageintensityCell = 0;
+					double areaCell = parent.resultIntensity.get(index).getB().Nucleiarea;
+					
+					double intensityCloud = parent.resultIntensity.get(index).getB().CloudIntensityChB;
+					double areaCloud = parent.resultIntensity.get(index).getB().Cloudarea;
 					double meanintensityCloud = 0 ;
 					if(areaCloud!= 0)
 					 meanintensityCloud = intensityCloud / areaCloud;
+					if(areaCell!=0)
+						averageintensityCell = intensityCell / areaCell;
+					
+					
 					bwtwo.write("\t" + time + "\t" + "\t" + parent.nf.format(intensityCell) + "\t" + "\t" + parent.nf.format(averageintensityCell)  + "\t" + "\t" + "\t" + "\t"
                      + parent.nf.format(areaCell)  + "\t" + "\t"   + parent.nf.format(intensityCloud) + "\t" + "\t" +
 							"\t" + "\t"   + parent.nf.format(meanintensityCloud) + "\t" + "\t"   + "\t" + "\t" + parent.nf.format(areaCloud) +

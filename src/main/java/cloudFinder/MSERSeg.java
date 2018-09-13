@@ -59,7 +59,7 @@ public class MSERSeg {
 			if(label!=parent.background) {
 			// Get the region 
 			RandomAccessibleInterval<FloatType> current = Watershedobject.CurrentDetectionImage(parent, parent.CurrentViewIntSegoriginalimg, parent.CurrentViewSegoriginalimg , label);
-			
+		
 			if (CovistoMserPanel.darktobright)
 
 				parent.newtree = MserTree.buildMserTree(current, CovistoMserPanel.delta, CovistoMserPanel.minSize, CovistoMserPanel.maxSize,

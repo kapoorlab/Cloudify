@@ -16,6 +16,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import cloudDisplayer.DisplayTrack;
+import cloudFinder.CloudTrackObject;
 import cloudFinder.Distance;
 import cloudTracker.TrackModel;
 import ij.gui.ImageCanvas;
@@ -192,24 +193,14 @@ public class DisplaySelectedTrack {
 		display.getImp();
 		
 		
-   		ArrayList<Pair<String, double[]>> currentresultIntASec = new ArrayList<Pair<String, double[]>>();
 
    		
 
-   		ArrayList<Pair<String, double[]>> currentresultIntBSec = new ArrayList<Pair<String, double[]>>();
-   		for (Pair<String, double[]> currentIntB : parent.resultIntensityBSec) {
-
-   			if (ID.equals(currentIntB.getA())) {
-
-   				currentresultIntBSec.add(currentIntB);
-
-   			}
-
-   		}
+   	
    		
-   		ArrayList<Pair<String, double[]>> currentresultIntA = new ArrayList<Pair<String, double[]>>();
+   		ArrayList<Pair<String, CloudTrackObject>> currentresultIntA = new ArrayList<Pair<String, CloudTrackObject>>();
 
-   		for (Pair<String, double[]> currentInt : parent.resultIntensityA) {
+   		for (Pair<String, CloudTrackObject> currentInt : parent.resultIntensity) {
 
    			if (ID.equals(currentInt.getA())) {
 
@@ -219,16 +210,8 @@ public class DisplaySelectedTrack {
 
    		}
 
-   		ArrayList<Pair<String, double[]>> currentresultIntB = new ArrayList<Pair<String, double[]>>();
-   		for (Pair<String, double[]> currentIntB : parent.resultIntensityB) {
-
-   			if (ID.equals(currentIntB.getA())) {
-
-   				currentresultIntB.add(currentIntB);
-
-   			}
-
-   		}
+   	
+   		
 
    		if (parent.imp != null) {
    			parent.imp.setOverlay(parent.overlay);
@@ -237,7 +220,7 @@ public class DisplaySelectedTrack {
 
    		if(parent.IntensityAdataset!=null)
    		parent.IntensityAdataset.removeAllSeries();
-   		parent.IntensityAdataset.addSeries(ChartMaker.drawCurvePoints(currentresultIntA));
+   		parent.IntensityAdataset.addSeries(ChartMaker.drawIntensityChA(currentresultIntA, "Intensity"));
 
    		parent.chartIntensityA = utility.ChartMaker.makeChart(parent.IntensityAdataset, "Cell - cloud intensity evolution (Ch1)", "Time", "Intensity");
    		
@@ -249,7 +232,7 @@ public class DisplaySelectedTrack {
    		
    		if(parent.IntensityBdataset!=null)
    	   		parent.IntensityBdataset.removeAllSeries();
-   	   		parent.IntensityBdataset.addSeries(ChartMaker.drawCurvePoints(currentresultIntB));
+   	   		parent.IntensityBdataset.addSeries(ChartMaker.drawIntensityCloudChA(currentresultIntA, "Intensity"));
 
    	   		parent.chartIntensityB = utility.ChartMaker.makeChart(parent.IntensityBdataset, "Only cloud intensity evolution (Ch1)", "Time", "Intensity");
    	   		
@@ -261,7 +244,7 @@ public class DisplaySelectedTrack {
    	   		
    	 	if(parent.IntensityAdatasetSec!=null)
    	   		parent.IntensityAdatasetSec.removeAllSeries();
-   	   		parent.IntensityAdatasetSec.addSeries(ChartMaker.drawCurvePointsSecond(currentresultIntASec));
+   	   		parent.IntensityAdatasetSec.addSeries(ChartMaker.drawIntensityChB(currentresultIntA, "Intensity"));
 
    	   		parent.chartIntensityASec = utility.ChartMaker.makeChart(parent.IntensityAdatasetSec, "Cell - cloud intensity evolution (Ch2)", "Time", "Intensity");
    	   		
@@ -273,7 +256,7 @@ public class DisplaySelectedTrack {
    	   		
    	   		if(parent.IntensityBdatasetSec!=null)
    	   	   		parent.IntensityBdatasetSec.removeAllSeries();
-   	   	   		parent.IntensityBdatasetSec.addSeries(ChartMaker.drawCurvePoints(currentresultIntBSec));
+   	   	   		parent.IntensityBdatasetSec.addSeries(ChartMaker.drawIntensityCloudChB(currentresultIntA, "Intensity"));
 
    	   	   		parent.chartIntensityBSec = utility.ChartMaker.makeChart(parent.IntensityBdatasetSec, "Only cloud intensity evolution (Ch2)", "Time", "Intensity");
    	   	   		

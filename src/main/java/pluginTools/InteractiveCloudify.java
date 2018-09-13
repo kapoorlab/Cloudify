@@ -41,6 +41,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import cloudFinder.CloudObject;
+import cloudFinder.CloudTrackObject;
 import cloudFinder.DOGSeg;
 import cloudFinder.MSERSeg;
 import cloudTracker.TrackModel;
@@ -127,9 +128,8 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public HashMap<String, CloudObject> Finalresult;
 	public MouseListener mvl;
 	public int[] Clickedpoints;
-	public ArrayList<Pair<String, double[]>> resultIntensityA;
-	public ArrayList<Pair<String, double[]>>  resultIntensityB;
-	public ArrayList<Pair<String, double[]>>  resultIntensityBSec;
+	public ArrayList<Pair<String, CloudTrackObject>> resultIntensity;
+	
 	public File saveFile;
 	public Frame jFreeChartFrameIntensityA;
 	public Frame jFreeChartFrameIntensityB;

@@ -248,6 +248,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		saveFile = new java.io.File(".");
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(3);
+		
 		jpb = new JProgressBar();
 		Clickedpoints = new int[2];
 		interval = new FinalInterval(originalimg.dimension(0), originalimg.dimension(1));

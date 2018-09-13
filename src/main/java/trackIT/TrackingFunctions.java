@@ -32,6 +32,8 @@ public class TrackingFunctions {
 
 		ArrayList<ArrayList<CloudObject>> colllist = new ArrayList<ArrayList<CloudObject>>();
 		parent.AllClouds = hashMapSorter.SortTimeorZ.sortByIntegerInter(parent.AllClouds);
+	
+		
 		for (Map.Entry<String, ArrayList<CloudObject>> entry : parent.AllClouds.entrySet()) {
 
 			ArrayList<CloudObject> bloblist = entry.getValue();

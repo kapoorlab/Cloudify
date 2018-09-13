@@ -160,7 +160,7 @@ public class MeasureProperties {
 		
 		for(int i = 0; i < numdim; ++i) {
 			
-			centroid[i] /= Intensity;
+			centroid[i] /= (Intensity);
 		}
 		return centroid;
 		

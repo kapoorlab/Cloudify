@@ -130,7 +130,7 @@ public class ChartMaker {
 
 		if (mts != null) {
 			for (final Pair<String, CloudTrackObject> mt : mts)
-				series.add(mt.getB().thirdDimension, mt.getB().totalIntensityChA);
+				series.add(mt.getB().thirdDimension, mt.getB().totalIntensityChA / ( 1 + mt.getB().Nucleiarea));
 		}
 		return series;
 	}
@@ -139,7 +139,7 @@ public class ChartMaker {
 
 		if (mts != null) {
 			for (final Pair<String, CloudTrackObject> mt : mts)
-				series.add(mt.getB().thirdDimension, mt.getB().totalIntensityChB);
+				series.add(mt.getB().thirdDimension, mt.getB().totalIntensityChB / ( 1 + mt.getB().Nucleiarea));
 		}
 		return series;
 	}
@@ -148,8 +148,10 @@ public class ChartMaker {
 		XYSeries series = new XYSeries(name);
 
 		if (mts != null) {
-			for (final Pair<String, CloudTrackObject> mt : mts)
-				series.add(mt.getB().thirdDimension, mt.getB().CloudIntensityChA);
+			for (final Pair<String, CloudTrackObject> mt : mts) 
+				series.add(mt.getB().thirdDimension, mt.getB().CloudIntensityChA/ (1 + mt.getB().Cloudarea));
+				
+			
 		}
 		return series;
 	}
@@ -158,7 +160,7 @@ public class ChartMaker {
 
 		if (mts != null) {
 			for (final Pair<String, CloudTrackObject> mt : mts)
-				series.add(mt.getB().thirdDimension, mt.getB().CloudIntensityChB);
+				series.add(mt.getB().thirdDimension, mt.getB().CloudIntensityChB / (1 + mt.getB().Cloudarea));
 		}
 		return series;
 	}

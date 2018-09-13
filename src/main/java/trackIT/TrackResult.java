@@ -114,11 +114,6 @@ public class TrackResult extends SwingWorker<Void, Void> {
 
 					CloudObject currentangle = Angleiter.next();
 					
-				
-					
-					
-					System.out.println(ID + " " + currentangle.totalintensity + " " + currentangle.totalintensityB);
-					
 					parent.Tracklist.add(new ValuePair<String, CloudObject>(ID, currentangle));
 					
 				}
@@ -196,7 +191,6 @@ public class TrackResult extends SwingWorker<Void, Void> {
 			cloudintensityB+=roiob.totalintensityB;
 			cloudarea += roiob.numberofpixels; 
 		}
-		
 		
 		
 		CloudTrackObject currentobject = new CloudTrackObject(currenttrack.getA(), currentangle.thirdDimension, currentangle.totalintensity, currentangle.totalintensityB, currentangle.area, cloudintensity, cloudintensityB, cloudarea);

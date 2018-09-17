@@ -79,12 +79,14 @@ public class MeasureProperties {
 					ranacB.get().set(iterB.get());
 					int x = ranacB.getIntPosition(0);
 					int y = ranacB.getIntPosition(1);
+					if(parent.Rois.size() > 0) {
 					for(Roi currentroi : parent.Rois) {
 						
 					if(currentroi.contains(x, y))
 						ranacB.get().setZero();
 					
 				}
+					}
 				
 				}
 			

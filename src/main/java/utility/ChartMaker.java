@@ -149,7 +149,7 @@ public class ChartMaker {
 
 		if (mts != null) {
 			for (final Pair<String, CloudTrackObject> mt : mts) 
-				series.add(mt.getB().thirdDimension, mt.getB().CloudIntensityChA/ (1 + mt.getB().Cloudarea));
+				series.add(mt.getB().thirdDimension, mt.getB().CloudIntensityChA/ (1 + mt.getB().CloudareaA));
 				
 			
 		}
@@ -160,7 +160,7 @@ public class ChartMaker {
 
 		if (mts != null) {
 			for (final Pair<String, CloudTrackObject> mt : mts)
-				series.add(mt.getB().thirdDimension, mt.getB().CloudIntensityChB / (1 + mt.getB().Cloudarea));
+				series.add(mt.getB().thirdDimension, mt.getB().CloudIntensityChB / (1 + mt.getB().CloudareaB));
 		}
 		return series;
 	}

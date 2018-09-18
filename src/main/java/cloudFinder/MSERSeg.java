@@ -50,45 +50,62 @@ public class MSERSeg {
 		 parent.overlay.clear();
 		 
 		 ArrayList<CloudObject> Allclouds = new ArrayList<CloudObject>();
-		 ArrayList<CloudObject> SecAllclouds = new ArrayList<CloudObject>();
-		
 		while (setiter.hasNext()) {
 
 			int label = setiter.next();
 			
 			if(label!=parent.background) {
 			// Get the region 
+			RandomAccessibleInterval<FloatType> Seccurrent = Watershedobject.CurrentDetectionImage(parent, parent.CurrentViewIntSegoriginalimg, parent.CurrentViewSecSegoriginalimg , label);
+
 			RandomAccessibleInterval<FloatType> current = Watershedobject.CurrentDetectionImage(parent, parent.CurrentViewIntSegoriginalimg, parent.CurrentViewSegoriginalimg , label);
 		
-			if (CovistoMserPanel.darktobright)
-
+			if (CovistoMserPanel.darktobright) {
+				parent.Secnewtree = MserTree.buildMserTree(Seccurrent, CovistoMserPanel.delta, CovistoMserPanel.minSize, CovistoMserPanel.maxSize,
+						CovistoMserPanel.Unstability_Score, CovistoMserPanel.minDiversity, true);
 				parent.newtree = MserTree.buildMserTree(current, CovistoMserPanel.delta, CovistoMserPanel.minSize, CovistoMserPanel.maxSize,
 						CovistoMserPanel.Unstability_Score, CovistoMserPanel.minDiversity, true);
+				
+			}
 
-			else
-
+			else {
+				parent.Secnewtree = MserTree.buildMserTree(Seccurrent, CovistoMserPanel.delta, CovistoMserPanel.minSize, CovistoMserPanel.maxSize,
+						CovistoMserPanel.Unstability_Score, CovistoMserPanel.minDiversity, false);
 				parent.newtree = MserTree.buildMserTree(current, CovistoMserPanel.delta, CovistoMserPanel.minSize, CovistoMserPanel.maxSize,
 						CovistoMserPanel.Unstability_Score, CovistoMserPanel.minDiversity, false);
+				
 			
-
+			}
 			parent.Rois = utility.FinderUtils.getcurrentRois(parent.newtree);
-			
+			parent.SecRois = utility.FinderUtils.getcurrentRois(parent.Secnewtree);
 			ArrayList<RoiObject> currentLabelObject = new ArrayList<RoiObject>();
-			
+			ArrayList<RoiObject> currentSecLabelObject = new ArrayList<RoiObject>();
+			for (Roi roi : parent.SecRois) {
+				
+				double[] Seccentroid = roi.getContourCentroid();
+				double SecIntensity = StaticMethods.getIntensity(parent.CurrentViewSecOrig, roi);
+				double SecnumPixels = StaticMethods.getNumberofPixels(parent.CurrentViewSecOrig, roi);
+				double SecmeanIntensity = SecIntensity / SecnumPixels;
+	
+				RoiObject currentSecRoiobject = new RoiObject(roi, Seccentroid, SecmeanIntensity, SecIntensity, SecnumPixels);
+				
+				currentSecLabelObject.add(currentSecRoiobject);
+				 roi.setStrokeColor(parent.colorDrawSecMser);
+					parent.overlay.add(roi);
+				
+			}
 			for(Roi roi : parent.Rois) {
 				
 				double[] centroid = roi.getContourCentroid();
 				
 				double Intensity = StaticMethods.getIntensity(parent.CurrentViewOrig, roi);
 				
-				double SecIntensity = StaticMethods.getIntensity(parent.CurrentViewSecOrig, roi);
 				
 				double numPixels = StaticMethods.getNumberofPixels(parent.CurrentViewOrig, roi);
 				
 				double meanIntensity = Intensity / numPixels;
 				
-				double SecmeanIntensity = SecIntensity / numPixels;
-				RoiObject currentRoiobject = new RoiObject(roi, centroid, meanIntensity, Intensity, SecmeanIntensity, SecIntensity, numPixels);
+				RoiObject currentRoiobject = new RoiObject(roi, centroid, meanIntensity, Intensity, numPixels);
 				
 				currentLabelObject.add(currentRoiobject);
 		
@@ -97,9 +114,14 @@ public class MSERSeg {
 				parent.overlay.add(roi);
 				
 			}
+			
+			
+			
+			
+			
 			Pair<RandomAccessibleInterval<FloatType>,RandomAccessibleInterval<FloatType>>  BothMissImage = Watershedobject.CurrentOrigLabelImage(parent, parent.CurrentViewIntSegoriginalimg, 
 					parent.CurrentViewOrig, parent.CurrentViewSecOrig, label);
-			MeasureProperties CloudandCell = new MeasureProperties(parent, BothMissImage.getA(), BothMissImage.getB(), currentLabelObject, label);
+			MeasureProperties CloudandCell = new MeasureProperties(parent, BothMissImage.getA(), BothMissImage.getB(), currentLabelObject, currentSecLabelObject, label);
 			Allclouds.addAll(CloudandCell.GetCurrentCloud());
 			
 			

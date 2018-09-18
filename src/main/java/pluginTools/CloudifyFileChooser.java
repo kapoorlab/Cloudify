@@ -25,12 +25,14 @@ import fileListeners.ChooseOrigMap;
 import fileListeners.ChooseSecOrigMap;
 import fileListeners.ChooseSegAMap;
 import fileListeners.ChooseSegBMap;
+import fileListeners.ChooseSegCMap;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import io.scif.img.ImgIOException;
 import io.scif.img.ImgOpener;
 import loadfile.CovistoOneChFileLoader;
+import loadfile.CovistoThreeChForceFileLoader;
 import loadfile.CovistoTwoChForceFileLoader;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
@@ -46,8 +48,8 @@ public class CloudifyFileChooser extends JPanel {
 	private static final long serialVersionUID = 1L;
 	  public JFrame Cardframe = new JFrame("Nuclear cloud aggregate tracker");
 	  public JPanel panelCont = new JPanel();
-	  public ImagePlus impOrig, impOrigSec, impSegA, impSegB;
-	  public File impOrigfile, impOrigSecfile, impSegAfile, impSegBfile;
+	  public ImagePlus impOrig, impOrigSec, impSegA, impSegB, impSegC;
+	  public File impOrigfile, impOrigSecfile, impSegAfile, impSegBfile, impSegCfile;
 	  public JPanel panelFirst = new JPanel();
 	  public JPanel Panelfile = new JPanel();
 	  public JPanel Panelsuperfile = new JPanel();
@@ -117,8 +119,8 @@ public class CloudifyFileChooser extends JPanel {
 					GridBagConstraints.HORIZONTAL, insets, 0, 0));
 			
 			
-			CovistoTwoChForceFileLoader segmentation = new CovistoTwoChForceFileLoader(chooseSegstring, blankimageNames);
-			Panelfile = segmentation.TwoChannelOption();
+			CovistoThreeChForceFileLoader segmentation = new CovistoThreeChForceFileLoader(chooseSegstring, blankimageNames);
+			Panelfile = segmentation.ThreeChannelOption();
 			
 			
 			panelFirst.add(Panelfile, new GridBagConstraints(0, 2, 3, 1, 0.0, 0.0, GridBagConstraints.WEST,
@@ -138,6 +140,8 @@ public class CloudifyFileChooser extends JPanel {
 			original.ChoosesecImage.addActionListener(new ChooseSecOrigMap(this, original.ChoosesecImage));
 			segmentation.ChooseImage.addActionListener(new ChooseSegAMap(this, segmentation.ChooseImage));
 			segmentation.ChoosesecImage.addActionListener(new ChooseSegBMap(this, segmentation.ChoosesecImage));
+			segmentation.ChoosethirdImage.addActionListener(new ChooseSegCMap(this, segmentation.ChoosethirdImage));
+			
 			Done.addActionListener(new DoneListener());
 			panelFirst.setVisible(true);
 			cl.show(panelCont, "1");
@@ -182,11 +186,12 @@ public class CloudifyFileChooser extends JPanel {
 			RandomAccessibleInterval<FloatType> imageOrigSec = new ImgOpener().openImgs(impOrigSec.getOriginalFileInfo().directory + impOrigSec.getOriginalFileInfo().fileName, new FloatType()).iterator().next();
 			RandomAccessibleInterval<IntType> imageSegA = new ImgOpener().openImgs(impSegA.getOriginalFileInfo().directory + impSegA.getOriginalFileInfo().fileName , new IntType()).iterator().next();
 			RandomAccessibleInterval<FloatType> imageSegB = new ImgOpener().openImgs(impSegB.getOriginalFileInfo().directory + impSegB.getOriginalFileInfo().fileName , new FloatType()).iterator().next();
+			RandomAccessibleInterval<FloatType> imageSegC = new ImgOpener().openImgs(impSegC.getOriginalFileInfo().directory + impSegC.getOriginalFileInfo().fileName , new FloatType()).iterator().next();
 			
 			
 			WindowManager.closeAllWindows();
 			
-			new InteractiveCloudify(imageOrig, imageOrigSec, imageSegA, imageSegB  ).run(null);
+			new InteractiveCloudify(imageOrig, imageOrigSec, imageSegA, imageSegB, imageSegC  ).run(null);
 			close(parent);
 			
 			

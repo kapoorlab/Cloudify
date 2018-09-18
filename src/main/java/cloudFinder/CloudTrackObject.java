@@ -13,11 +13,11 @@ public class CloudTrackObject {
 	public double CloudIntensityChA;
 	public double CloudIntensityChB;
 	
-	public double Cloudarea;
-	
+	public double CloudareaA;
+	public double CloudareaB;
 	
 	public CloudTrackObject(final String trackID, final int thirdDimension, final double totalIntensityChA, final double totalIntensityChB, final double Nucleiarea, final double CloudIntensityChA,
-			final double CloudIntensityChB, final double  Cloudarea) {
+			final double CloudIntensityChB, final double  CloudareaA, final double CloudareaB) {
 		
 		
 		
@@ -28,8 +28,8 @@ public class CloudTrackObject {
 		this.Nucleiarea = Nucleiarea;
 		this.CloudIntensityChA = CloudIntensityChA;
 		this.CloudIntensityChB = CloudIntensityChB;
-		this .Cloudarea = Cloudarea;
-		
+		this .CloudareaA = CloudareaA;
+		this.CloudareaB = CloudareaB;
 	}
 	
 }

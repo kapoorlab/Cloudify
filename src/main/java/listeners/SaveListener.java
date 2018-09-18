@@ -48,7 +48,7 @@ public class SaveListener implements ActionListener {
 					double areaCell = parent.resultIntensity.get(index).getB().Nucleiarea;
 					
 					double intensityCloud = parent.resultIntensity.get(index).getB().CloudIntensityChA;
-					double areaCloud = parent.resultIntensity.get(index).getB().Cloudarea;
+					double areaCloud = parent.resultIntensity.get(index).getB().CloudareaA;
 					double meanintensityCloud = 0 ;
 					if(areaCloud!= 0)
 					 meanintensityCloud = intensityCloud / areaCloud;
@@ -90,7 +90,7 @@ public class SaveListener implements ActionListener {
 					double areaCell = parent.resultIntensity.get(index).getB().Nucleiarea;
 					
 					double intensityCloud = parent.resultIntensity.get(index).getB().CloudIntensityChB;
-					double areaCloud = parent.resultIntensity.get(index).getB().Cloudarea;
+					double areaCloud = parent.resultIntensity.get(index).getB().CloudareaB;
 					double meanintensityCloud = 0 ;
 					if(areaCloud!= 0)
 					 meanintensityCloud = intensityCloud / areaCloud;

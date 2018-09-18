@@ -29,6 +29,7 @@ public class CloudObject extends AbstractEuclideanSpace implements RealLocalizab
 	public int thirdDimension;
 	public int fourthDimension;
 	public ArrayList<RoiObject> roiobject;
+	public ArrayList<RoiObject> Secroiobject;
 	public int label;
 	private final int ID;
 	private String name;
@@ -43,8 +44,9 @@ public class CloudObject extends AbstractEuclideanSpace implements RealLocalizab
 	
 	/**
 	 * 
-	 * Integer image with the label, geometric center, intensity and area are for the image
-	 * Roi object contains the properties of Rois inside that integer image
+	 * Integer image with the label, geometric center, intensity and area are for
+	 * the image Roi object contains the properties of Rois inside that integer
+	 * image
 	 * 
 	 * @param Intimg
 	 * @param roiobject
@@ -55,24 +57,27 @@ public class CloudObject extends AbstractEuclideanSpace implements RealLocalizab
 	 * @param thirdDimension
 	 * @param fourthDimension
 	 */
-	
-	public CloudObject(final RandomAccessibleInterval<IntType> Intimg, final ArrayList<RoiObject> roiobject, final double[] geomtericcenter, 
-			final double area, final double totalintensity, final double averageintensity,  final double totalintensityB, final double averageintensityB, final int thirdDimension, final int fourthDimension, final int label) {
+
+	public CloudObject(final RandomAccessibleInterval<IntType> Intimg, final ArrayList<RoiObject> roiobject,final ArrayList<RoiObject> Secroiobject,
+			final double[] geomtericcenter, final double area, final double totalintensity,
+			final double averageintensity, final double totalintensityB, final double averageintensityB,
+			final int thirdDimension, final int fourthDimension, final int label) {
 		super(3);
 		this.Intimg = Intimg;
-        this.roiobject = roiobject;
-        this.geometriccenter = geomtericcenter;
-        this.area = area;
-        this.totalintensity = totalintensity;
-        this.averageintensity = averageintensity;
-        this.totalintensityB = totalintensityB;
-        this.averageintensityB = averageintensityB;
-        this.thirdDimension = thirdDimension;
-        this.fourthDimension = fourthDimension;
-        this.label = label;
-     	this.ID = IDcounter.incrementAndGet();
+		this.roiobject = roiobject;
+		this.Secroiobject = Secroiobject;
+		this.geometriccenter = geomtericcenter;
+		this.area = area;
+		this.totalintensity = totalintensity;
+		this.averageintensity = averageintensity;
+		this.totalintensityB = totalintensityB;
+		this.averageintensityB = averageintensityB;
+		this.thirdDimension = thirdDimension;
+		this.fourthDimension = fourthDimension;
+		this.label = label;
+		this.ID = IDcounter.incrementAndGet();
 		this.name = "ID" + ID;
-    	    putFeature(ThirdDimension,  (double) thirdDimension);
+		putFeature(ThirdDimension, (double) thirdDimension);
 		putFeature(FourthDimension, (double) fourthDimension);
 		putFeature(XPOSITION, geometriccenter[0]);
 		putFeature(YPOSITION, geometriccenter[1]);

@@ -20,7 +20,7 @@ import timeGUI.CovistoTimeselectPanel;
 import zGUI.CovistoZselectPanel;
 
 public class DOGSeg  {
-
+/*
 	final InteractiveCloudify parent;
 	final JProgressBar jpb;
 
@@ -40,7 +40,7 @@ public class DOGSeg  {
 		 * Create a watershed object that defines the region of interest, then make a roi object inside that region to get the clouds, finally put it all together as a cloud object
 		 * and enumerate it all in a list and a hashmap for that time.
 		 */
-	
+/*	
 		
 		String uniqueID = Integer.toString(CovistoZselectPanel.thirdDimension) + Integer.toString(CovistoTimeselectPanel.fourthDimension);
 		
@@ -131,5 +131,5 @@ public class DOGSeg  {
 	}
 
 	
-
+*/
 }

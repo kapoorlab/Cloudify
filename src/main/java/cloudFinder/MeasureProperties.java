@@ -22,13 +22,17 @@ public class MeasureProperties {
 	final InteractiveCloudify parent;
 	final int SegmentationLabel;
 	final ArrayList<RoiObject> currentLabelObject;
+	final ArrayList<RoiObject> currentSecLabelObject;
 	final RandomAccessibleInterval<FloatType> OrigImageA;
 	final RandomAccessibleInterval<FloatType> OrigImageB;
-	public MeasureProperties( final InteractiveCloudify parent, final RandomAccessibleInterval<FloatType> OrigImageA, final RandomAccessibleInterval<FloatType> OrigImageB, final ArrayList<RoiObject> currentLabelObject, final int SegmentationLabel) {
-		
-		
+
+	public MeasureProperties(final InteractiveCloudify parent, final RandomAccessibleInterval<FloatType> OrigImageA,
+			final RandomAccessibleInterval<FloatType> OrigImageB, final ArrayList<RoiObject> currentLabelObject, final ArrayList<RoiObject> currentSecLabelObject,
+			final int SegmentationLabel) {
+
 		this.parent = parent;
 		this.currentLabelObject = currentLabelObject;
+		this.currentSecLabelObject = currentSecLabelObject;
 		this.SegmentationLabel = SegmentationLabel;
 		this.OrigImageA = OrigImageA;
 		this.OrigImageB = OrigImageB;
@@ -53,7 +57,7 @@ public class MeasureProperties {
 				int x = ranac.getIntPosition(0);
 				int y = ranac.getIntPosition(1);
 				
-				
+				if(parent.Rois.size() > 0) {
 				for(Roi currentroi : parent.Rois) {
 					
 				if(currentroi.contains(x, y))
@@ -62,6 +66,7 @@ public class MeasureProperties {
 					
 				
 			}
+				}
 			
 			}
 			
@@ -79,8 +84,8 @@ public class MeasureProperties {
 					ranacB.get().set(iterB.get());
 					int x = ranacB.getIntPosition(0);
 					int y = ranacB.getIntPosition(1);
-					if(parent.Rois.size() > 0) {
-					for(Roi currentroi : parent.Rois) {
+					if(parent.SecRois.size() > 0) {
+					for(Roi currentroi : parent.SecRois) {
 						
 					if(currentroi.contains(x, y))
 						ranacB.get().setZero();
@@ -99,7 +104,7 @@ public class MeasureProperties {
 			double totalIntensityB = computeTotal(Views.iterable(outimgB));
 			
 		Watershedobject current = new Watershedobject(parent, centroid, meanIntensity, totalIntensity, meanIntensityB, totalIntensityB, NumPixels);
-		CloudObject currentCloud = new CloudObject(parent.CurrentViewIntSegoriginalimg, currentLabelObject, current.centroid, current.NumPixels, current.totalIntensity, current.meanIntensity,
+		CloudObject currentCloud = new CloudObject(parent.CurrentViewIntSegoriginalimg, currentLabelObject,currentSecLabelObject, current.centroid, current.NumPixels, current.totalIntensity, current.meanIntensity,
 				current.totalIntensityB, current.meanIntensityB,
 				CovistoZselectPanel.thirdDimension, CovistoTimeselectPanel.fourthDimension, SegmentationLabel);
 		Allclouds.add(currentCloud);

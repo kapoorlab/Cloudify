@@ -175,35 +175,34 @@ public class TrackResult extends SwingWorker<Void, Void> {
 	
 	
 	public void CreateTableView(InteractiveCloudify parent) {
-		
+
 		parent.resultIntensity = new ArrayList<Pair<String, CloudTrackObject>>();
 
-		for ( Pair<String, CloudObject> currenttrack: parent.Tracklist ) {
-		double cloudintensity = 0;
-		double cloudintensityB = 0;
-		double cloudarea = 0;
-		
-		CloudObject currentangle = currenttrack.getB();
-		for (int i= 0; i < currentangle.roiobject.size(); ++i) {
-			
-			RoiObject roiob = currentangle.roiobject.get(i);
-			cloudintensity+=roiob.totalintensity;
-			cloudintensityB+=roiob.totalintensityB;
-			cloudarea += roiob.numberofpixels; 
+		for (Pair<String, CloudObject> currenttrack : parent.Tracklist) {
+			double cloudintensity = 0;
+			double cloudintensityB = 0;
+			double cloudarea = 0;
+			double cloudareaB = 0;
+
+			CloudObject currentangle = currenttrack.getB();
+			for (int i = 0; i < currentangle.roiobject.size(); ++i) {
+
+				RoiObject roiob = currentangle.roiobject.get(i);
+				RoiObject Secroiob = currentangle.Secroiobject.get(i);
+				cloudintensity += roiob.totalintensity;
+				cloudintensityB += Secroiob.totalintensity;
+				cloudarea += roiob.numberofpixels;
+				cloudareaB += Secroiob.numberofpixels;
+			}
+
+			CloudTrackObject currentobject = new CloudTrackObject(currenttrack.getA(), currentangle.thirdDimension,
+					currentangle.totalintensity, currentangle.totalintensityB, currentangle.area, cloudintensity,
+					cloudintensityB, cloudarea, cloudareaB);
+
+			parent.resultIntensity.add(new ValuePair<String, CloudTrackObject>(currenttrack.getA(), currentobject));
+
 		}
-		
-		
-		CloudTrackObject currentobject = new CloudTrackObject(currenttrack.getA(), currentangle.thirdDimension, currentangle.totalintensity, currentangle.totalintensityB, currentangle.area, cloudintensity, cloudintensityB, cloudarea);
-		
-		parent.resultIntensity.add(new ValuePair<String, CloudTrackObject>(currenttrack.getA(), currentobject));
-		
-	
-		}
-	
-		
-	
-		
-		
+
 		Object[] colnames = new Object[] { "Track Id", "Location X", "Location Y", "Location Z/T", "Mean Intensity" };
 
 		Object[][] rowvalues = new Object[0][colnames.length];
@@ -228,7 +227,7 @@ public class TrackResult extends SwingWorker<Void, Void> {
 		}
 
 		makeGUI(parent);
-		
+
 	}
 	
 	

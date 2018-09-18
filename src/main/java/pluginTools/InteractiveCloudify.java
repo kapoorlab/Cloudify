@@ -98,6 +98,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public JProgressBar jpb;
 	public boolean apply3D = false;
 	public ArrayList<Roi> Rois;
+	public ArrayList<Roi> SecRois;
 	public ImagePlus imp;
 	public int ndims;
 	public NumberFormat nf;
@@ -163,9 +164,11 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public RandomAccessibleInterval<FloatType> CurrentViewSecOrig;
 	
 	public RandomAccessibleInterval<FloatType> Segoriginalimg;
+	public RandomAccessibleInterval<FloatType> SecSegoriginalimg;
 	public RandomAccessibleInterval<IntType> IntSegoriginalimg;
 	
 	public RandomAccessibleInterval<FloatType> CurrentViewSegoriginalimg;
+	public RandomAccessibleInterval<FloatType> CurrentViewSecSegoriginalimg;
 	public RandomAccessibleInterval<IntType> CurrentViewIntSegoriginalimg;
 	public ArrayList<Pair<String, CloudObject>> Tracklist;
 	public ArrayList<Pair<String, CloudObject>> TracklistChannelTwo;
@@ -178,7 +181,9 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	
 	public TrackModel Globalmodel;
 	public MserTree<FloatType> newtree;
+	public MserTree<FloatType> Secnewtree;
 	public Color colorDrawMser = Color.green;
+	public Color colorDrawSecMser = Color.red;
 	public Color colorDrawDog = Color.red;
 	public Color colorConfirm = Color.blue;
 	public Color colorSnake = Color.YELLOW;
@@ -203,22 +208,25 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public InteractiveCloudify(final RandomAccessibleInterval<FloatType> originalimg,
 			final RandomAccessibleInterval<FloatType> originalSecimg,
 			final RandomAccessibleInterval<IntType> IntSegoriginalimg,
-			final RandomAccessibleInterval<FloatType> Segoriginalimg) {
+			final RandomAccessibleInterval<FloatType> Segoriginalimg,
+			final RandomAccessibleInterval<FloatType> SecSegoriginalimg) {
 
 		this.originalimg = originalimg;
 		this.originalSecimg = originalSecimg;
 		this.IntSegoriginalimg = IntSegoriginalimg;
 		this.Segoriginalimg = Segoriginalimg;
+		this.SecSegoriginalimg = SecSegoriginalimg;
 		this.ndims = originalimg.numDimensions();
 		FloatType minval = new FloatType(0);
 		FloatType maxval = new FloatType(255);
 		Normalize.normalize(Views.iterable(Segoriginalimg), minval, maxval);
+		
+		Normalize.normalize(Views.iterable(SecSegoriginalimg), minval, maxval);
 		this.IntensityAdataset = new XYSeriesCollection();
 		this.IntensityBdataset = new XYSeriesCollection();
 		
 		this.IntensityAdatasetSec = new XYSeriesCollection();
 		this.IntensityBdatasetSec = new XYSeriesCollection();
-		
 		this.chartIntensityA = utility.ChartMaker.makeChart(IntensityAdataset, "Cell - Cloud (Ch1) Intensity evolution", "Timepoint", "Intensity");
 		
 		
@@ -302,6 +310,9 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 				CovistoZselectPanel.thirdDimensionSize,CovistoTimeselectPanel.fourthDimension,
 				CovistoTimeselectPanel.fourthDimensionSize);
 
+		CurrentViewSecSegoriginalimg = utility.CovistoSlicer.getCurrentView(SecSegoriginalimg,  CovistoZselectPanel.thirdDimension,
+				CovistoZselectPanel.thirdDimensionSize,CovistoTimeselectPanel.fourthDimension,
+				CovistoTimeselectPanel.fourthDimensionSize);
 		
 		
 		IntType min = new IntType();
@@ -354,6 +365,10 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 			CurrentViewSegoriginalimg = utility.CovistoSlicer.getCurrentView(Segoriginalimg,  CovistoZselectPanel.thirdDimension,
 					CovistoZselectPanel.thirdDimensionSize,CovistoTimeselectPanel.fourthDimension,
 					CovistoTimeselectPanel.fourthDimensionSize);
+			
+			CurrentViewSecSegoriginalimg = utility.CovistoSlicer.getCurrentView(SecSegoriginalimg,  CovistoZselectPanel.thirdDimension,
+					CovistoZselectPanel.thirdDimensionSize,CovistoTimeselectPanel.fourthDimension,
+					CovistoTimeselectPanel.fourthDimensionSize);
 
 			if (imp == null) {
 				imp = ImageJFunctions.show(CurrentViewOrig);
@@ -381,13 +396,13 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 				MSERSeg computeMSER = new MSERSeg(this, jpb);
 				computeMSER.execute();
 			}
-
+/*
 			if (showDOG) {
 
 				DOGSeg computeDOG = new DOGSeg(this, jpb);
 				computeDOG.execute();
 			}
-
+*/
 			CovistoZselectPanel.zText.setText("Current Z = " + localthirddim);
 			CovistoZselectPanel.zgenText.setText("Current Z / T = " + localthirddim);
 			CovistoZselectPanel.zslider.setValue(utility.CovistoSlicer.computeScrollbarPositionFromValue(localthirddim,
@@ -452,10 +467,10 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 
 			imp.setTitle("Active image" + " " + "time point : " + CovistoTimeselectPanel.fourthDimension + " " + " Z: "
 					+ CovistoZselectPanel.thirdDimension);
-
+/*
 			DOGSeg computeDOG = new DOGSeg(this, jpb);
 			computeDOG.execute();
-
+*/
 		}
 
 	}

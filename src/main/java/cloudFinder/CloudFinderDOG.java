@@ -52,7 +52,7 @@ public class CloudFinderDOG<T extends RealType<T> & NativeType<T>> implements Cl
 
 	@Override
 	public boolean process() {
-
+/*
 		
 		DOGSeg computeDOG = new DOGSeg(parent, jpb);
 		try {
@@ -61,7 +61,7 @@ public class CloudFinderDOG<T extends RealType<T> & NativeType<T>> implements Cl
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		*/
 		return true;
 	}
 

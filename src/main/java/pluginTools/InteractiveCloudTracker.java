@@ -14,18 +14,20 @@ public class InteractiveCloudTracker {
 		new ImageJ();
 		JFrame frame = new JFrame("");
 		
-		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/StemCellJulia/IlastikTraining/TestImages/decon_for_segmentation/Clouds.tif");
+		ImagePlus impA = new Opener().openImage("/Volumes/TRANSCEND/DeconImagesJulia/NucleiSegmentation/NonOverlap/SmallLabelIgnoredObjectMedianC1-MAX_20180625-visit_12_decon_.tif");
 		impA.show();
 		
-		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/StemCellJulia/IlastikTraining/TestImages/decon_for_segmentation/SmallLabelIgnoredGood2Bad1.tif");
+		ImagePlus impB = new Opener().openImage("/Volumes/TRANSCEND/DeconImagesJulia/CloudSegmentation/CloudC1-MAX_20180625-visit_12_decon_.tif");
 		impB.show();
 		
-		ImagePlus impC = new Opener().openImage("/Users/aimachine/Documents/StemCellJulia/IlastikTraining/TestImages/rawdata/C1-MAX_20180907-CL60-Dox0900-TT3h-TL5min_visit_5.tif");
+		ImagePlus impC = new Opener().openImage("/Volumes/TRANSCEND/DeconImagesJulia/CloudSegmentation/CloudC2-MAX_20180625-visit_12_decon_.tif");
 		impC.show();
 		
-		ImagePlus impD = new Opener().openImage("/Users/aimachine/Documents/StemCellJulia/IlastikTraining/TestImages/rawdata/C2-MAX_20180907-CL60-Dox0900-TT3h-TL5min_visit_5.tif");
+		ImagePlus impD = new Opener().openImage("/Users/aimachine/Documents/JuliaData/Julia/C1-MAX_20180625-visit_12_ch_1.tif");
 		impD.show();
 		
+		ImagePlus impE = new Opener().openImage("/Users/aimachine/Documents/JuliaData/Julia/C2-MAX_20180625-visit_12_ch_2.tif");
+		impE.show();
 		
 		
 		CloudifyFileChooser panel = new CloudifyFileChooser();

@@ -85,7 +85,10 @@ public class MSERSeg {
 				double[] Seccentroid = roi.getContourCentroid();
 				double SecIntensity = StaticMethods.getIntensity(parent.CurrentViewSecOrig, roi);
 				double SecnumPixels = StaticMethods.getNumberofPixels(parent.CurrentViewSecOrig, roi);
-				double SecmeanIntensity = SecIntensity / SecnumPixels;
+				
+				double SecmeanIntensity = 0;
+						if(SecnumPixels > 0)
+							SecmeanIntensity = SecIntensity / SecnumPixels;
 	
 				RoiObject currentSecRoiobject = new RoiObject(roi, Seccentroid, SecmeanIntensity, SecIntensity, SecnumPixels);
 				
@@ -103,7 +106,10 @@ public class MSERSeg {
 				
 				double numPixels = StaticMethods.getNumberofPixels(parent.CurrentViewOrig, roi);
 				
-				double meanIntensity = Intensity / numPixels;
+				double meanIntensity = 0;
+				
+				if(numPixels > 0)
+					meanIntensity = Intensity / numPixels;
 				
 				RoiObject currentRoiobject = new RoiObject(roi, centroid, meanIntensity, Intensity, numPixels);
 				

@@ -99,7 +99,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public boolean apply3D = false;
 	public ArrayList<Roi> Rois;
 	public ArrayList<Roi> SecRois;
-	public ImagePlus imp;
+	public ImagePlus imp, impsec;
 	public int ndims;
 	public NumberFormat nf;
 	public final int scrollbarSize = 1000;
@@ -134,7 +134,8 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public File saveFile;
 	public Frame jFreeChartFrameIntensityA;
 	public Frame jFreeChartFrameIntensityB;
-	
+	public final String NameA;
+	public final String NameB;
 	public JFreeChart chartIntensityA;
 	public JFreeChart chartIntensityB;
 	
@@ -209,13 +210,17 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 			final RandomAccessibleInterval<FloatType> originalSecimg,
 			final RandomAccessibleInterval<IntType> IntSegoriginalimg,
 			final RandomAccessibleInterval<FloatType> Segoriginalimg,
-			final RandomAccessibleInterval<FloatType> SecSegoriginalimg) {
+			final RandomAccessibleInterval<FloatType> SecSegoriginalimg,
+			final String NameA,
+			final String NameB) {
 
 		this.originalimg = originalimg;
 		this.originalSecimg = originalSecimg;
 		this.IntSegoriginalimg = IntSegoriginalimg;
 		this.Segoriginalimg = Segoriginalimg;
 		this.SecSegoriginalimg = SecSegoriginalimg;
+		this.NameA = NameA;
+		this.NameB = NameB;
 		this.ndims = originalimg.numDimensions();
 		FloatType minval = new FloatType(0);
 		FloatType maxval = new FloatType(255);
@@ -256,7 +261,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		saveFile = new java.io.File(".");
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(3);
-		
+		nf.setGroupingUsed(false);
 		jpb = new JProgressBar();
 		Clickedpoints = new int[2];
 		interval = new FinalInterval(originalimg.dimension(0), originalimg.dimension(1));
@@ -327,6 +332,13 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 
 		imp.setTitle("Active image" + " " + "time point : " + CovistoTimeselectPanel.fourthDimension + " " + " Z: "
 				+ CovistoZselectPanel.thirdDimension);
+		
+
+		impsec = ImageJFunctions.wrapFloat(CurrentViewSecOrig, "");
+
+		impsec.setTitle("Active image" + " " + "time point : " + CovistoTimeselectPanel.fourthDimension + " " + " Z: "
+				+ CovistoZselectPanel.thirdDimension);
+		
 		updatePreview(ValueChange.THIRDDIMmouse);
 		Card();
 	}
@@ -334,6 +346,8 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	public void updatePreview(final ValueChange change) {
 
 		overlay = imp.getOverlay();
+		
+		
 		if (overlay == null) {
 
 			overlay = new Overlay();

@@ -30,14 +30,14 @@ public class SaveAllListener implements ActionListener {
 for(int tablepos = 0; tablepos< parent.table.getRowCount(); ++tablepos) {
 			
 			String ID = (String) parent.table.getValueAt(tablepos, 0);
-		File fichier = new File(parent.saveFile + "//" + parent.addToName + "TrackID" + ID + "Channel 1" + ".txt");
+		File fichier = new File(parent.saveFile + "//" + parent.addToName + parent.NameA  + "TrackID" + ID + "Channel 1" + ".txt");
 
 		FileWriter fw;
 		try {
 			fw = new FileWriter(fichier);
 			BufferedWriter bw = new BufferedWriter(fw);
 
-			bw.write("\tTime (px)\t Total Intensity Cell \t Average Intensity Cell  \t AreaCell \t Total Intensity Cloud  \t Mean Intensity Cloud \t AreaCloud \n");
+			bw.write("Time (px), Total Intensity Cell , Average Intensity Cell  , AreaCell , Total Intensity Cloud  , Mean Intensity Cloud , AreaCloud \n");
 
 			for (int index = 0; index < parent.resultIntensity.size(); ++index) {
 
@@ -57,9 +57,8 @@ for(int tablepos = 0; tablepos< parent.table.getRowCount(); ++tablepos) {
 						averageintensityCell = intensityCell / areaCell;
 					
 					
-					bw.write("\t" + time + "\t" + "\t" + parent.nf.format(intensityCell) + "\t" + "\t" + parent.nf.format(averageintensityCell)  + "\t" + "\t"  + "\t" + "\t"
-		                     + parent.nf.format(areaCell)  + "\t" + "\t"   + parent.nf.format(intensityCloud) +"\t" + "\t" +
-								"\t" + "\t"   + parent.nf.format(meanintensityCloud) + "\t" + "\t"   + "\t" + "\t" + parent.nf.format(areaCloud) +
+					bw.write(time + ","  + parent.nf.format(intensityCell) + "," + parent.nf.format(averageintensityCell)  + "," 
+		                     + parent.nf.format(areaCell)  + ","   + parent.nf.format(intensityCloud) +","  + parent.nf.format(meanintensityCloud) + ","  + parent.nf.format(areaCloud) +
 								"\n");
 
 				}
@@ -73,14 +72,14 @@ for(int tablepos = 0; tablepos< parent.table.getRowCount(); ++tablepos) {
 			e.printStackTrace();
 		}
 
-		File fichiertwo = new File(parent.saveFile + "//" + parent.addToName + "TrackID" + ID + "Channel 2" + ".txt");
+		File fichiertwo = new File(parent.saveFile + "//" + parent.addToName + parent.NameB + "TrackID" + ID + "Channel 2" + ".txt");
 
 		FileWriter fwtwo;
 		try {
 			fwtwo = new FileWriter(fichiertwo);
 			BufferedWriter bwtwo = new BufferedWriter(fwtwo);
 
-			bwtwo.write("\tTime (px)\t Total Intensity Cell \t Average Intensity Cell  \t AreaCell \t Total Intensity Cloud \t Mean Intensity Cloud  \t AreaCloud \n");
+			bwtwo.write("Time (px), Total Intensity Cell , Average Intensity Cell  , AreaCell , Total Intensity Cloud , Mean Intensity Cloud  , AreaCloud \n");
 
 			for (int index = 0; index < parent.resultIntensity.size(); ++index) {
 
@@ -100,9 +99,8 @@ for(int tablepos = 0; tablepos< parent.table.getRowCount(); ++tablepos) {
 						averageintensityCell = intensityCell / areaCell;
 					
 					
-					bwtwo.write("\t" + time + "\t" + "\t" + parent.nf.format(intensityCell) + "\t" + "\t" + parent.nf.format(averageintensityCell)  + "\t" + "\t" + "\t" + "\t"
-                     + parent.nf.format(areaCell)  + "\t" + "\t"   + parent.nf.format(intensityCloud) + "\t" + "\t" +
-							"\t" + "\t"   + parent.nf.format(meanintensityCloud) + "\t" + "\t"   + "\t" + "\t" + parent.nf.format(areaCloud) +
+					bwtwo.write( time + ","  + parent.nf.format(intensityCell) + "," + parent.nf.format(averageintensityCell)  + "," 
+                     + parent.nf.format(areaCell)  + ","  + parent.nf.format(intensityCloud) + ","   + parent.nf.format(meanintensityCloud) + "," + parent.nf.format(areaCloud) +
 							"\n");
 				}
 

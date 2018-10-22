@@ -191,7 +191,7 @@ public class CloudifyFileChooser extends JPanel {
 			
 			WindowManager.closeAllWindows();
 			
-			new InteractiveCloudify(imageOrig, imageOrigSec, imageSegA, imageSegB, imageSegC  ).run(null);
+			new InteractiveCloudify(imageOrig, imageOrigSec, imageSegA, imageSegB, imageSegC,impOrig.getOriginalFileInfo().fileName,impOrigSec.getOriginalFileInfo().fileName    ).run(null);
 			close(parent);
 			
 			

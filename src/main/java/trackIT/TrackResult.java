@@ -105,7 +105,7 @@ public class TrackResult extends SwingWorker<Void, Void> {
 				model.setName(id, "Track" + id);
 				parent.Globalmodel = model;
 				final HashSet<CloudObject> Angleset = model.trackCloudObjects(id);
-				
+				if (Angleset.size() > parent.AccountedZ.size() / 4) {
 			
 				Iterator<CloudObject> Angleiter = Angleset.iterator();
 				
@@ -119,13 +119,13 @@ public class TrackResult extends SwingWorker<Void, Void> {
 				}
 				Collections.sort(parent.Tracklist, ThirdDimcomparison);
 
-			
+				}
 			}
 
 			for (int id = minid; id <= maxid; ++id) {
 				CloudObject bestangle = null;
 				
-				if (model.trackCloudObjects(id) != null) {
+				if (model.trackCloudObjects(id) != null && model.trackCloudObjects(id).size() > parent.AccountedZ.size() / 4) {
 
 					List<CloudObject> sortedList = new ArrayList<CloudObject>(model.trackCloudObjects(id));
 

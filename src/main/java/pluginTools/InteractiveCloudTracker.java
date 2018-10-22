@@ -14,19 +14,19 @@ public class InteractiveCloudTracker {
 		new ImageJ();
 		JFrame frame = new JFrame("");
 		
-		ImagePlus impA = new Opener().openImage("/Volumes/TRANSCEND/DeconImagesJulia/NucleiSegmentation/NonOverlap/SmallLabelIgnoredObjectMedianC1-MAX_20180625-visit_12_decon_.tif");
+		ImagePlus impA = new Opener().openImage("/Users/aimachine/Documents/JuliaData/CloudChoneSegmentation/CloudSUM_C1-20180629-TX1072-CL60-Dox0820_visit_1.tif");
 		impA.show();
 		
-		ImagePlus impB = new Opener().openImage("/Volumes/TRANSCEND/DeconImagesJulia/CloudSegmentation/CloudC1-MAX_20180625-visit_12_decon_.tif");
+		ImagePlus impB = new Opener().openImage("/Users/aimachine/Documents/JuliaData/CloudChtwoSegmentation/CloudSUM_C2-20180629-TX1072-CL60-Dox0820_visit_1.tif");
 		impB.show();
 		
-		ImagePlus impC = new Opener().openImage("/Volumes/TRANSCEND/DeconImagesJulia/CloudSegmentation/CloudC2-MAX_20180625-visit_12_decon_.tif");
+		ImagePlus impC = new Opener().openImage("/Users/aimachine/Documents/JuliaData/OriginalImageChtwo/SUM_C2-20180629-TX1072-CL60-Dox0820_visit_1.tif");
 		impC.show();
 		
-		ImagePlus impD = new Opener().openImage("/Users/aimachine/Documents/JuliaData/Julia/C1-MAX_20180625-visit_12_ch_1.tif");
+		ImagePlus impD = new Opener().openImage("/Users/aimachine/Documents/JuliaData/OriginalImageChone/SUM_C1-20180629-TX1072-CL60-Dox0820_visit_1.tif");
 		impD.show();
 		
-		ImagePlus impE = new Opener().openImage("/Users/aimachine/Documents/JuliaData/Julia/C2-MAX_20180625-visit_12_ch_2.tif");
+		ImagePlus impE = new Opener().openImage("/Users/aimachine/Documents/JuliaData/NucleiSegmentation/StarProbLabelsStemCell256RaysSUM_C1-20180629-TX1072-CL60-Dox0820_visit_1_cor.tif");
 		impE.show();
 		
 		

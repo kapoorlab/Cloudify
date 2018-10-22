@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import ij.gui.Roi;
 import net.imglib2.Cursor;
+import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.integer.IntType;
@@ -63,12 +64,15 @@ public class StaticMethods {
 		}
 	}
 	
-	public static double getIntensity(RandomAccessibleInterval<FloatType> source, Roi roi) {
+	public static double getIntensity(RandomAccessibleInterval<FloatType> source, RandomAccessibleInterval<FloatType> Segsource, Roi roi) {
 
 		double Intensity = 0;
 
 		Cursor<FloatType> currentcursor = Views.iterable(source).localizingCursor();
 
+		RandomAccess<FloatType> Segcurrentcursor = Segsource.randomAccess();
+		
+		
 		final double[] position = new double[source.numDimensions()];
 
 		while (currentcursor.hasNext()) {
@@ -77,9 +81,10 @@ public class StaticMethods {
 
 			currentcursor.localize(position);
 
+			Segcurrentcursor.setPosition(currentcursor);
 			int x = (int) position[0];
 			int y = (int) position[1];
-			if (roi.contains(x, y)) {
+			if (roi.contains(x, y) && Segcurrentcursor.get().get() > 0) {
 
 				Intensity += currentcursor.get().get();
 
@@ -91,12 +96,14 @@ public class StaticMethods {
 
 	}
 	
-	public static double getNumberofPixels(RandomAccessibleInterval<FloatType> source, Roi roi) {
+	public static double getNumberofPixels(RandomAccessibleInterval<FloatType> source, RandomAccessibleInterval<FloatType> Segsource,  Roi roi) {
 
 		double NumberofPixels = 0;
 
 		Cursor<FloatType> currentcursor = Views.iterable(source).localizingCursor();
 
+		RandomAccess<FloatType> Segcurrentcursor = Segsource.randomAccess();
+		
 		final double[] position = new double[source.numDimensions()];
 
 		while (currentcursor.hasNext()) {
@@ -104,11 +111,11 @@ public class StaticMethods {
 			currentcursor.fwd();
 
 			currentcursor.localize(position);
-
+			Segcurrentcursor.setPosition(currentcursor);
 			int x = (int) position[0];
 			int y = (int) position[1];
 
-			if (roi.contains(x, y)) {
+			if (roi.contains(x, y) && Segcurrentcursor.get().get() > 0) {
 
 				NumberofPixels++;
 

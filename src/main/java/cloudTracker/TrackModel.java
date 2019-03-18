@@ -26,6 +26,7 @@ import org.jgrapht.event.TraversalListener;
 import org.jgrapht.event.TraversalListenerAdapter;
 import org.jgrapht.event.VertexTraversalEvent;
 import org.jgrapht.graph.AsUnweightedGraph;
+import org.jgrapht.graph.DefaultListenableGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.ListenableUndirectedGraph;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
@@ -56,7 +57,7 @@ public class TrackModel {
 	 * {@link #removeEdge(DefaultWeightedEdge)},
 	 * {@link #removeEdge(CloudObject, CloudObject)} .
 	 */
-	private ListenableUndirectedGraph<CloudObject, DefaultWeightedEdge> graph;
+	private DefaultListenableGraph<CloudObject, DefaultWeightedEdge> graph;
 
 	private final MyGraphListener mgl;
 
@@ -156,7 +157,7 @@ public class TrackModel {
 		if (null != this.graph) {
 			this.graph.removeGraphListener(mgl);
 		}
-		this.graph = new ListenableUndirectedGraph<CloudObject, DefaultWeightedEdge>(graph);
+		this.graph = new DefaultListenableGraph<CloudObject, DefaultWeightedEdge>(graph);
 		this.graph.addGraphListener(mgl);
 		init(graph);
 	}
@@ -199,7 +200,7 @@ public class TrackModel {
 		if (null != this.graph) {
 			this.graph.removeGraphListener(mgl);
 		}
-		this.graph = new ListenableUndirectedGraph<CloudObject, DefaultWeightedEdge>(graph);
+		this.graph = new DefaultListenableGraph<CloudObject, DefaultWeightedEdge>(graph);
 		this.graph.addGraphListener(mgl);
 
 		edgesAdded.clear();
@@ -653,7 +654,7 @@ public class TrackModel {
 	 * @param graph
 	 *            the graph to read edges and vertices from.
 	 */
-	private void init(final UndirectedGraph<CloudObject, DefaultWeightedEdge> graph) {
+	private void init(final SimpleWeightedGraph<CloudObject, DefaultWeightedEdge> graph) {
 		vertexToID = new HashMap<CloudObject, Integer>();
 		edgeToID = new HashMap<DefaultWeightedEdge, Integer>();
 		IDcounter = 0;
@@ -670,7 +671,7 @@ public class TrackModel {
 		final Set<CloudObject> vertexSet = graph.vertexSet();
 		if (vertexSet.size() > 0) {
 			final BreadthFirstIterator<CloudObject, DefaultWeightedEdge> i = new BreadthFirstIterator<CloudObject, DefaultWeightedEdge>(
-					graph, null);
+					graph);
 			i.addTraversalListener(new MyTraversalListener());
 
 			while (i.hasNext()) {
@@ -856,7 +857,7 @@ public class TrackModel {
 		}
 
 		@Override
-		public void edgeTraversed(final EdgeTraversalEvent<CloudObject, DefaultWeightedEdge> event) {
+		public void edgeTraversed(final EdgeTraversalEvent< DefaultWeightedEdge> event) {
 			final DefaultWeightedEdge e = event.getEdge();
 			currentConnectedEdgeSet.add(e);
 			edgeToID.put(e, ID);

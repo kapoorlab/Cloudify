@@ -75,6 +75,10 @@ public class StaticMethods {
 		
 		final double[] position = new double[source.numDimensions()];
 
+		FloatType minimum = new FloatType();
+		FloatType maximum = new FloatType();
+		 
+		computeMinMax(Views.iterable(Segsource), minimum, maximum);
 		while (currentcursor.hasNext()) {
 
 			currentcursor.fwd();
@@ -106,6 +110,10 @@ public class StaticMethods {
 		
 		final double[] position = new double[source.numDimensions()];
 
+		FloatType minimum = new FloatType();
+		FloatType maximum = new FloatType();
+		 
+		computeMinMax(Views.iterable(Segsource), minimum, maximum);
 		while (currentcursor.hasNext()) {
 
 			currentcursor.fwd();
@@ -115,7 +123,7 @@ public class StaticMethods {
 			int x = (int) position[0];
 			int y = (int) position[1];
 
-			if (roi.contains(x, y) && Segcurrentcursor.get().get() > 0) {
+			if (roi.contains(x, y) && Segcurrentcursor.get().get() > 0 ) {
 
 				NumberofPixels++;
 

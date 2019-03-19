@@ -55,8 +55,7 @@ public class SaveListener implements ActionListener {
 					if(areaCell!=0)
 						averageintensityCell = intensityCell / areaCell;
 					bw.write(time + "," + parent.nf.format(intensityCell) + "," + parent.nf.format(averageintensityCell)  + ","
-		                     + parent.nf.format(areaCell)  + "," + ","   + parent.nf.format(intensityCloud) +  "," + "," +
-								","   + parent.nf.format(meanintensityCloud) + ","  + parent.nf.format(areaCloud) +
+		                     + parent.nf.format(areaCell)  + ","  + parent.nf.format(intensityCloud) +  ","  + parent.nf.format(meanintensityCloud) + ","  + parent.nf.format(areaCloud) +
 								"\n");
 
 				}

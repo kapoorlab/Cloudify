@@ -11,7 +11,7 @@
 
 	<groupId>net.kapoor</groupId>
 	<artifactId>C_Track</artifactId>
-	<version>0.0.1</version>
+	<version>1.0.0</version>
 
 	<name>Cloud Aggregate tracker</name>
 	<description>Track Cloud aggregates inside Nuclei</description>

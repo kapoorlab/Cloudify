@@ -67,10 +67,12 @@ import nearestNeighbourGUI.CovistoNearestNPanel;
 import net.imglib2.Cursor;
 import net.imglib2.FinalInterval;
 import net.imglib2.Point;
+import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
 import net.imglib2.algorithm.localextrema.RefinedPeak;
 import net.imglib2.algorithm.stats.Normalize;
+import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.Type;
 import net.imglib2.type.logic.BitType;
@@ -222,11 +224,7 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 		this.NameA = NameA;
 		this.NameB = NameB;
 		this.ndims = originalimg.numDimensions();
-		FloatType minval = new FloatType(0);
-		FloatType maxval = new FloatType(255);
-		Normalize.normalize(Views.iterable(Segoriginalimg), minval, maxval);
-		
-		Normalize.normalize(Views.iterable(SecSegoriginalimg), minval, maxval);
+	
 		this.IntensityAdataset = new XYSeriesCollection();
 		this.IntensityBdataset = new XYSeriesCollection();
 		
@@ -254,10 +252,39 @@ public class InteractiveCloudify extends JPanel implements PlugIn {
 	}
 	
 
-	
+	public static RandomAccessibleInterval<FloatType> CreateBinary(RandomAccessibleInterval<FloatType> source, double lowprob,
+			double highprob) {
+
+		RandomAccessibleInterval<FloatType> copyoriginal = new ArrayImgFactory<FloatType>().create(source,
+				new FloatType());
+
+		final RandomAccess<FloatType> ranac = copyoriginal.randomAccess();
+		final Cursor<FloatType> cursor = Views.iterable(source).localizingCursor();
+
+		while (cursor.hasNext()) {
+
+			cursor.fwd();
+
+			ranac.setPosition(cursor);
+			if (cursor.get().getRealDouble() >= lowprob && cursor.get().getRealDouble() <= highprob) {
+
+				ranac.get().set(cursor.get());
+			} else {
+				ranac.get().set(0);
+			}
+
+		}
+
+		return copyoriginal;
+
+	}
 
 	@Override
 	public void run(String arg0) {
+		
+		
+		Segoriginalimg = CreateBinary(Segoriginalimg, 0.7,1.0);
+		SecSegoriginalimg = CreateBinary(SecSegoriginalimg, 0.7,1.0);
 		saveFile = new java.io.File(".");
 		nf = NumberFormat.getInstance(Locale.ENGLISH);
 		nf.setMaximumFractionDigits(3);

@@ -9,11 +9,16 @@ import javax.swing.SwingWorker;
 
 import ij.gui.Roi;
 import mserGUI.CovistoMserPanel;
+import net.imglib2.Cursor;
+import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
+import net.imglib2.algorithm.stats.Normalize;
+import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
+import net.imglib2.view.Views;
 import pluginTools.InteractiveCloudify;
 import timeGUI.CovistoTimeselectPanel;
 import zGUI.CovistoZselectPanel;
@@ -56,6 +61,16 @@ public class MSERSeg {
 			int label = setiter.next();
 
 			if (label != parent.background) {
+
+				FloatType minval = new FloatType(0);
+				FloatType maxval = new FloatType(255);
+				
+				Normalize.normalize(Views.iterable(parent.CurrentViewSecSegoriginalimg), minval, maxval);
+				
+	            Normalize.normalize(Views.iterable(parent.CurrentViewSegoriginalimg), minval, maxval);
+	            
+
+	            
 				// Get the region
 				RandomAccessibleInterval<FloatType> Seccurrent = Watershedobject.CurrentDetectionImage(parent,
 						parent.CurrentViewIntSegoriginalimg, parent.CurrentViewSecSegoriginalimg, label);
@@ -89,7 +104,13 @@ public class MSERSeg {
 
 				ArrayList<RoiObject> currentLabelObject = new ArrayList<RoiObject>();
 				ArrayList<RoiObject> currentSecLabelObject = new ArrayList<RoiObject>();
-
+			
+			
+				
+			
+				
+			
+				
 				for (Roi roi : parent.SecRois) {
 
 					double[] Seccentroid = roi.getContourCentroid();
@@ -146,5 +167,6 @@ public class MSERSeg {
 		parent.imp.updateAndDraw();
 
 	}
+
 
 }
